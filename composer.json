@@ -1,5 +1,5 @@
 {
-    "name": "xtremcreative/panda",
+    "name": "xtremcreative/panda-core",
     "description": "The Panda framework",
     "require": {
     	"php": ">=5.3.3",
