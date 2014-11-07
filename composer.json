@@ -1,0 +1,11 @@
+{
+    "name": "xtremcreative/panda",
+    "description": "The Panda framework",
+    "require": {
+    	"php": ">=5.3.3",
+        "twig/twig": "1.*",
+        "symfony/http-foundation": "2.1.*",
+        "doctrine/orm": "2.4.6",
+        "ext-mcrypt": "*"
+    }
+}
