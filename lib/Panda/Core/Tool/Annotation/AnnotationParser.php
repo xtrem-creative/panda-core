@@ -8,5 +8,5 @@ interface AnnotationParser
 
     public function getKnownAnnotations();
 
-    public function addKnownAnnotation(Annotation $a);
+    public function addKnownAnnotation($annotationClassName, $alias = null);
 } 

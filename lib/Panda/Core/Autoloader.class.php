@@ -23,7 +23,11 @@ class Autoloader
             return;
         }
 
-        $filePath = dirname(__FILE__) . '/../../' . str_replace('\\', '/', $class);
+        if (0 === strpos($class, APP_NAMESPACE)) {
+            $filePath = dirname(__FILE__) . '/app/' . str_replace('\\', '/', $class);
+        } else {
+            $filePath = dirname(__FILE__) . '/../../' . str_replace('\\', '/', $class);
+        }
 
         if (is_file($filePath . '.class.php')) {
             require $filePath . '.class.php';

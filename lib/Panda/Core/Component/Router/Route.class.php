@@ -11,19 +11,31 @@ class Route
     private $urlPattern;
     private $bundleName;
     private $actionName;
-    private $securedCriteras;
+    private $httpMethod;
+    private $vars;
 
-    public function __construct($urlPattern, $bundleName, $actionName, $securedCriteras = null)
+    public function __construct($urlPattern, $bundleName, $actionName, $httpMethod, $vars)
     {
         $this->setUrlPattern($urlPattern);
         $this->setBundleName($bundleName);
         $this->setActionName($actionName);
-        $this->setSecuredCriteras($securedCriteras);
+        $this->setHttpMethod($httpMethod);
+        $this->setVars($vars);
     }
 
     public function match($url)
     {
-
+        $matches = array();
+        if (preg_match('`^' . $this->urlPattern . '$`', $url, $matches)) {
+            if (!empty($this->vars)) {
+                unset($matches[0]);
+                $matches = array_values($matches);
+                $this->vars = array_combine($this->vars, $matches);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -61,17 +73,17 @@ class Route
     /**
      * @return mixed
      */
-    public function getSecuredCriteras()
+    public function getHttpMethod()
     {
-        return $this->securedCriteras;
+        return $this->httpMethod;
     }
 
     /**
-     * @param mixed $securedCriteras
+     * @param mixed $httpMethod
      */
-    public function setSecuredCriteras($securedCriteras)
+    public function setHttpMethod($httpMethod)
     {
-        $this->securedCriteras = $securedCriteras;
+        $this->httpMethod = is_array($httpMethod) ? $httpMethod : array($httpMethod);
     }
 
     /**
@@ -88,5 +100,21 @@ class Route
     public function setUrlPattern($urlPattern)
     {
         $this->urlPattern = $urlPattern;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getVars()
+    {
+        return $this->vars;
+    }
+
+    /**
+     * @param mixed $vars
+     */
+    public function setVars($vars)
+    {
+        $this->vars = $vars;
     }
 } 

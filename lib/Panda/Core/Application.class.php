@@ -1,8 +1,10 @@
 <?php
 
 namespace Panda\Core;
+
 use Logger;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
+use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -13,11 +15,12 @@ class Application implements \ArrayAccess
 {
     private $name;
     private $components = array();
+    private $logger = null;
 
     public function __construct($name = 'prod')
     {
-        $this->components['Logger\Logger'] = Logger::getLogger('panda');
-        $this['Logger\Logger']->debug('Panda framework started.');
+        $this->logger = Logger::getLogger(__CLASS__);
+        $this->logger->debug('Panda framework started.');
         $this->setName($name);
     }
 
@@ -32,18 +35,22 @@ class Application implements \ArrayAccess
         } catch (NoMatchingRouteException $e) {
             //No matching route -> 404 Not Found
             $this->exitFailure(404);
+        } catch (NoMatchingRouteMethodException $e) {
+            $this->exitFailure(405);
         }
+
+        var_dump($matchingRoute);
     }
 
     public function exitFailure($httpCode)
     {
-        $this['Logger\Logger']->debug('Exit failure with HTTP code "'.$httpCode.'".');
+        $this->logger->debug('Exit failure with HTTP code "'.$httpCode.'".');
         exit;
     }
 
     public function exitSuccess($httpCode)
     {
-        $this['Logger\Logger']->debug('Exit success with HTTP code "'.$httpCode.'".');
+        $this->logger->debug('Exit success with HTTP code "'.$httpCode.'".');
         exit;
     }
 
