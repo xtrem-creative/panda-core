@@ -8,8 +8,7 @@
       "twig/twig": "1.*",
       "symfony/http-foundation": "2.1.*",
       "doctrine/orm": "2.4.6",
-      "ext-mcrypt": "*",
-      "mindplay/annotations": "dev-master"
+      "ext-mcrypt": "*"
     },
     "authors": [
         {"name": "Stanislas Michalak", "email": "stanislas.michalak@gmail.com"}
