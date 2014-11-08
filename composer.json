@@ -1,11 +1,20 @@
 {
     "name": "xtremcreative/panda-core",
     "description": "The Panda framework",
+    "type": "library",
     "require": {
-    	"php": ">=5.3.3",
-        "twig/twig": "1.*",
-        "symfony/http-foundation": "2.1.*",
-        "doctrine/orm": "2.4.6",
-        "ext-mcrypt": "*"
+      "php": ">=5.3.3",
+      "apache/log4php": "2.3.0",
+      "twig/twig": "1.*",
+      "symfony/http-foundation": "2.1.*",
+      "doctrine/orm": "2.4.6",
+      "ext-mcrypt": "*",
+      "mindplay/annotations": "dev-master"
+    },
+    "authors": [
+        {"name": "Stanislas Michalak", "email": "stanislas.michalak@gmail.com"}
+    ],
+    "autoload": {
+        "psr-0": { "Panda\\": "lib/" }
     }
 }
