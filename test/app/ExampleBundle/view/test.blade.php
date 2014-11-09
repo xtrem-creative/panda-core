@@ -5,6 +5,8 @@
     <title>Home test page</title>
 </head>
     <body>
-        <h1>Hello Panda !</h1>
+        Hello, {{{ $name }}}.
+
+        The current UNIX timestamp is {{{ time() }}}.
     </body>
 </html>

@@ -16,6 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class Application implements \ArrayAccess
 {
+    private $dependencies = array(
+        'Tool/Function/String.php'
+    );
     private $name;
     private $components = array();
     private $logger = null;
@@ -25,15 +28,24 @@ class Application implements \ArrayAccess
     public function __construct($name = 'prod')
     {
         $this->startupTime = microtime(true);
+        $this->loadDependencies();
         Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Panda framework started.');
         $this->setName($name);
     }
 
+    public function loadDependencies()
+    {
+        foreach ($this->dependencies as $dependency) {
+            require_once $dependency;
+        }
+    }
+
     public function run()
     {
         $router = $this->getComponent('Router\Router');
+        $router->reloadRoutes();
         $this->components['Symfony\Request'] = Request::createFromGlobals();
 
         try {
@@ -59,6 +71,7 @@ class Application implements \ArrayAccess
     {
         $this->logger->debug('Exit failure with HTTP code "'.$httpCode.'".');
         //TODO! Display error
+        echo 'Error:' . $httpCode;
         exit;
     }
 

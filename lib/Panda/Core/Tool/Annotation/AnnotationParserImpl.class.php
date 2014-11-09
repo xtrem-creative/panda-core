@@ -39,7 +39,7 @@ class AnnotationParserImpl implements AnnotationParser
                     $params = array();
                 }
 
-                $params[] = $m;
+                array_unshift($params, $m);
 
                 if (array_key_exists($tagName, $this->knownTags)) {
                     $reflection = new ReflectionClass($this->knownTags[$tagName]);

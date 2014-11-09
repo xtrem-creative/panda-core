@@ -23,6 +23,12 @@ class Route
         $this->setVars($vars);
     }
 
+    /**
+     * Check whether the given url matches with one in the known patterns list.
+     * @param $url
+     * @return bool
+     * @throws \InvalidArgumentException
+     */
     public function match($url)
     {
         $urlComponents = parse_url($url);
@@ -68,7 +74,7 @@ class Route
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getActionName()
     {
@@ -76,7 +82,7 @@ class Route
     }
 
     /**
-     * @param mixed $actionName
+     * @param string $actionName
      */
     public function setActionName($actionName)
     {
@@ -84,7 +90,7 @@ class Route
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getBundleName()
     {
@@ -92,7 +98,7 @@ class Route
     }
 
     /**
-     * @param mixed $bundleName
+     * @param string $bundleName
      */
     public function setBundleName($bundleName)
     {
@@ -100,7 +106,7 @@ class Route
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getHttpMethod()
     {
@@ -108,7 +114,7 @@ class Route
     }
 
     /**
-     * @param mixed $httpMethod
+     * @param string $httpMethod
      */
     public function setHttpMethod($httpMethod)
     {
@@ -116,7 +122,7 @@ class Route
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getUrlPattern()
     {
@@ -124,7 +130,7 @@ class Route
     }
 
     /**
-     * @param mixed $urlPattern
+     * @param string $urlPattern
      */
     public function setUrlPattern($urlPattern)
     {
@@ -132,7 +138,7 @@ class Route
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getVars()
     {
@@ -140,7 +146,7 @@ class Route
     }
 
     /**
-     * @param mixed $vars
+     * @param string $vars
      */
     public function setVars($vars)
     {

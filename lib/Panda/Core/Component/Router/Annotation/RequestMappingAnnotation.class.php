@@ -13,10 +13,10 @@ class RequestMappingAnnotation implements Annotation
     private $action;
     private $vars;
 
-    public function __construct($value, $httpMethod, ReflectionMethod $classMethod)
+    public function __construct(ReflectionMethod $classMethod, $value, $httpMethod = 'GET|POST')
     {
         $this->value = $value;
-        $this->method = $httpMethod;
+        $this->method = explode('|', $httpMethod);
         $this->action = $classMethod->getName();
         $this->bundle = str_replace(APP_NAMESPACE . '\\', '', substr($classMethod->class, 0,
             strrpos($classMethod->class, '\\')));
@@ -68,7 +68,7 @@ class RequestMappingAnnotation implements Annotation
     /**
      * @param mixed $method
      */
-    public function setMethod($method)
+    public function setMethod(array $method)
     {
         $this->method = $method;
     }

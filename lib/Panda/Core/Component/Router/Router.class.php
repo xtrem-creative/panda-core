@@ -13,22 +13,27 @@ use Panda\Core\Tool\Annotation\AnnotationParserImpl;
 class Router
 {
     private $routes = array();
+    private $annotationParser;
 
     public function __construct()
     {
-        $this->reloadRoutes();
+        $this->annotationParser = new AnnotationParserImpl();
+        $this->addAvailableAnnotation('Panda\Core\Component\Router\Annotation\RequestMappingAnnotation',
+            'RequestMapping');
+    }
+
+    public function addAvailableAnnotation($className, $shortName)
+    {
+        $this->annotationParser->addKnownAnnotation($className, $shortName);
     }
 
     public function reloadRoutes($reloadCache = false)
     {
         if (empty($routes) || $reloadCache) {
-            $annotationParser = new AnnotationParserImpl();
-            $annotationParser->addKnownAnnotation('Panda\Core\Component\Router\Annotation\RequestMappingAnnotation', 'RequestMapping');
-
             $bundleControllers = glob(APP_DIR . '*Bundle/*BundleController.class.php');
 
             foreach ($bundleControllers as $controller) {
-                $tags = $annotationParser->parse(str_replace('/', '\\', str_replace('.class.php', '',
+                $tags = $this->annotationParser->parse(str_replace('/', '\\', str_replace('.class.php', '',
                     str_replace(APP_DIR, APP_NAMESPACE . '\\', $controller))));
 
                 foreach ($tags as $tag) {

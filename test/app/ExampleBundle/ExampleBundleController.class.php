@@ -7,7 +7,7 @@ use Panda\Core\Component\Bundle\AbstractController;
 class ExampleBundleController extends AbstractController
 {
     /**
-     * @RequestMapping(value="/", method="GET")
+     * @RequestMapping(value="/")
      * @Secured([ "ROLE_MEMBER" ])
      */
     public function testGetTwigAction($name = 'panda')
@@ -19,8 +19,9 @@ class ExampleBundleController extends AbstractController
     /**
      * @RequestMapping(value="/blade", method="GET")
      */
-    public function testGetBladeAction()
+    public function testGetBladeAction($name = 'panda')
     {
+        $this->view->setVar('name', htmlspecialchars($name));
         return "test.blade.php";
     }
 

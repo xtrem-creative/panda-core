@@ -27,7 +27,7 @@ class BladeView implements View
 
         $blade = new Blade(array($this->templatesDir, $this->viewsDir), $this->cacheDir);
 
-        $result = $blade->view()->make(basename($templateName, '.blade.php'));
+        $result = $blade->view()->make(basename($templateName, '.blade.php'), $vars);
 
         $this->logger->debug('Render "'.$templateName.'" with Blade engine');
 
@@ -54,7 +54,7 @@ class BladeView implements View
                 if (!file_exists($cacheDir . 'blade')) {
                     mkdir($cacheDir . 'blade');
                 }
-                $this->cacheDir = $cacheDir . 'twig';
+                $this->cacheDir = $cacheDir . 'blade';
             } else {
                 throw new ResourceNotWritableException('Blade "'.$cacheDir.'" cache directory is not writable. Please
                 check the permissions for this folder');
