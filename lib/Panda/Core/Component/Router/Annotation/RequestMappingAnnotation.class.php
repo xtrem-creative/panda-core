@@ -18,9 +18,11 @@ class RequestMappingAnnotation implements Annotation
         $this->value = $value;
         $this->method = $httpMethod;
         $this->action = $classMethod->getName();
-        $this->bundle = str_replace('Controller', '', $classMethod->class);
-
-        $this->vars = array_map(function($p){return $p->getName();}, $classMethod->getParameters());
+        $this->bundle = str_replace(APP_NAMESPACE . '\\', '', substr($classMethod->class, 0,
+            strrpos($classMethod->class, '\\')));
+        $this->vars = array_map(function($p){
+            return array('name' => $p->getName(), 'required' => !$p->isOptional());
+        }, $classMethod->getParameters());
     }
 
     /**

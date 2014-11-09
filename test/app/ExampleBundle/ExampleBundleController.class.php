@@ -2,17 +2,26 @@
 
 namespace PandaTest\ExampleBundle;
 
-use Panda\Core\Component\Bundle\AbstractControllerImpl;
+use Panda\Core\Component\Bundle\AbstractController;
 
-class ExampleBundleController extends AbstractControllerImpl
+class ExampleBundleController extends AbstractController
 {
     /**
      * @RequestMapping(value="/", method="GET")
      * @Secured([ "ROLE_MEMBER" ])
      */
-    public function testGetAction()
+    public function testGetTwigAction($name = 'panda')
     {
+        $this->view->setVar('name', htmlspecialchars($name));
+        return "home.twig";
+    }
 
+    /**
+     * @RequestMapping(value="/blade", method="GET")
+     */
+    public function testGetBladeAction()
+    {
+        return "test.blade.php";
     }
 
     /**
@@ -26,8 +35,12 @@ class ExampleBundleController extends AbstractControllerImpl
     /**
      * @RequestMapping(value="/([a-z])-([a-z])-([a-z])-([a-z])", method="GET")
      */
-    public function testGetParamAction($a, $b, $d, $c)
+    public function testGetParamAction($a, $b, $c, $d, $e = null)
     {
-
+        var_dump($a);
+        var_dump($b);
+        var_dump($c);
+        var_dump($d);
+        var_dump($e);
     }
 } 

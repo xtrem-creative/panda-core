@@ -1,0 +1,108 @@
+<?php
+
+namespace Panda\Core\Component\Bundle\View;
+
+use Logger;
+use Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException;
+use Panda\Core\Component\Bundle\View\Exception\ResourceNotWritableException;
+use Philo\Blade\Blade;
+
+class BladeView implements View
+{
+    private $logger;
+    protected $templatesDir = null;
+    protected $viewsDir = null;
+    protected $cacheDir = null;
+
+    public function __construct($templatesDir, $viewsDir, $cacheDir)
+    {
+        $this->setTemplatesDir($templatesDir);
+        $this->setViewsDir($viewsDir);
+        $this->setCacheDir($cacheDir);
+    }
+
+    public function render($templateName, $vars = null)
+    {
+        $this->logger = Logger::getLogger(__CLASS__);
+
+        $blade = new Blade(array($this->templatesDir, $this->viewsDir), $this->cacheDir);
+
+        $result = $blade->view()->make(basename($templateName, '.blade.php'));
+
+        $this->logger->debug('Render "'.$templateName.'" with Blade engine');
+
+        return $result;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheDir()
+    {
+        return $this->cacheDir;
+    }
+
+    /**
+     * @param string $cacheDir
+     * @throws Exception\ResourceNotFoundException
+     * @throws Exception\ResourceNotWritableException
+     */
+    public function setCacheDir($cacheDir)
+    {
+        if (is_dir($cacheDir)) {
+            if (is_writable($cacheDir)) {
+                if (!file_exists($cacheDir . 'blade')) {
+                    mkdir($cacheDir . 'blade');
+                }
+                $this->cacheDir = $cacheDir . 'twig';
+            } else {
+                throw new ResourceNotWritableException('Blade "'.$cacheDir.'" cache directory is not writable. Please
+                check the permissions for this folder');
+            }
+        } else {
+            throw new ResourceNotFoundException('Blade "'.$cacheDir.'" cache directory not found');
+        }
+    }
+
+    /**
+     * @return null
+     */
+    public function getTemplatesDir()
+    {
+        return $this->templatesDir;
+    }
+
+    /**
+     * @param string $templatesDir
+     * @throws Exception\ResourceNotFoundException
+     */
+    public function setTemplatesDir($templatesDir)
+    {
+        if (is_dir($templatesDir)) {
+            $this->templatesDir = $templatesDir;
+        } else {
+            throw new ResourceNotFoundException('Blade "'.$templatesDir.'" templates directory not found');
+        }
+    }
+
+    /**
+     * @return null
+     */
+    public function getViewsDir()
+    {
+        return $this->viewsDir;
+    }
+
+    /**
+     * @param string $viewsDir
+     * @throws ResourceNotFoundException
+     */
+    public function setViewsDir($viewsDir)
+    {
+        if (is_dir($viewsDir)) {
+            $this->viewsDir = $viewsDir;
+        } else {
+            throw new ResourceNotFoundException('Twig "'.$viewsDir.'" views directory not found');
+        }
+    }
+}

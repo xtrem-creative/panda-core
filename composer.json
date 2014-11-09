@@ -5,10 +5,13 @@
     "require": {
       "php": ">=5.3.3",
       "apache/log4php": "2.3.0",
-      "twig/twig": "1.*",
       "symfony/http-foundation": "2.1.*",
       "doctrine/orm": "2.4.6",
       "ext-mcrypt": "*"
+    },
+    "require-dev": {
+        "twig/twig": "1.*",
+        "philo/laravel-blade": "dev-master"
     },
     "authors": [
         {"name": "Stanislas Michalak", "email": "stanislas.michalak@gmail.com"}

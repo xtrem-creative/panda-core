@@ -37,4 +37,6 @@ class Autoloader
     }
 }
 
+require_once 'Function/String.php';
+
 Autoloader::register();

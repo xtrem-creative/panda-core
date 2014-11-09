@@ -3,9 +3,12 @@
 namespace Panda\Core;
 
 use Logger;
+use Panda\Core\Component\Bundle\View\ViewFacade;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
+use Panda\Core\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * The main class of panda-core
@@ -16,9 +19,13 @@ class Application implements \ArrayAccess
     private $name;
     private $components = array();
     private $logger = null;
+    private $route;
+    private $startupTime;
 
     public function __construct($name = 'prod')
     {
+        $this->startupTime = microtime(true);
+        Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Panda framework started.');
         $this->setName($name);
@@ -30,7 +37,7 @@ class Application implements \ArrayAccess
         $this->components['Symfony\Request'] = Request::createFromGlobals();
 
         try {
-            $matchingRoute = $router->findMatchingRoute(str_replace(WEB_ROOT, '/',
+            $this->route = $router->findMatchingRoute(str_replace(WEB_ROOT, '/',
                 $this['Symfony\Request']->getRequestUri()));
         } catch (NoMatchingRouteException $e) {
             //No matching route -> 404 Not Found
@@ -39,18 +46,32 @@ class Application implements \ArrayAccess
             $this->exitFailure(405);
         }
 
-        var_dump($matchingRoute);
+        $view = $this->getController($this->route)->exec();
+
+        if ($view->getHttpCode() >= 200 && $view->getHttpCode() <= 226) {
+            $this->exitSuccess($view);
+        } else {
+            $this->exitFailure($view->getHttpCode());
+        }
     }
 
     public function exitFailure($httpCode)
     {
         $this->logger->debug('Exit failure with HTTP code "'.$httpCode.'".');
+        //TODO! Display error
         exit;
     }
 
-    public function exitSuccess($httpCode)
+    public function exitSuccess(ViewFacade $view)
     {
-        $this->logger->debug('Exit success with HTTP code "'.$httpCode.'".');
+        $response = new Response(
+            $view->getRenderedContent(),
+            $view->getHttpCode(),
+            array('content-type', $view->getContentType())
+        );
+        $execTime = microtime(true) - $this->startupTime;
+        $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$execTime.' s.');
+        $response->send();
         exit;
     }
 
@@ -61,6 +82,14 @@ class Application implements \ArrayAccess
             $this->components[$componentName] = new $componentClassPath();
         }
         return $this->components[$componentName];
+    }
+
+    public function getController(Route $route)
+    {
+        $controllerClass = APP_NAMESPACE . '\\' . $route->getBundleName() . '\\' . $route->getBundleName() .
+            'Controller';
+
+        return new $controllerClass($this, $route->getBundleName(), $route->getActionName());
     }
 
     /**
@@ -84,6 +113,22 @@ class Application implements \ArrayAccess
         } else {
             throw new \InvalidArgumentException('Invalid application name "'.$name.'"');
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRoute()
+    {
+        return $this->route;
+    }
+
+    /**
+     * @param mixed $route
+     */
+    public function setRoute($route)
+    {
+        $this->route = $route;
     }
 
     /**

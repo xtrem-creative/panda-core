@@ -25,16 +25,45 @@ class Route
 
     public function match($url)
     {
-        $matches = array();
-        if (preg_match('`^' . $this->urlPattern . '$`', $url, $matches)) {
-            if (!empty($this->vars)) {
-                unset($matches[0]);
-                $matches = array_values($matches);
-                $this->vars = array_combine($this->vars, $matches);
+        $urlComponents = parse_url($url);
+        if (false !== $urlComponents) {
+            if (preg_match('`^' . $this->urlPattern . '$`', $urlComponents['path'], $matches)) {
+                if (!empty($this->vars)) {
+                    unset($matches[0]);
+                    $matches = array_values($matches);
+
+                    $varsCount = count($this->vars);
+                    $matchesCount = count($matches);
+
+                    $vars = array();
+                    $i = 0;
+
+                    foreach ($this->vars as $varValue) {
+                        if ($i < $matchesCount) {
+                            $vars[$this->vars[$i]['name']] = $varValue;
+                        } else {
+                            if ($_SERVER['REQUEST_METHOD'] === 'POST' && array_key_exists($this->vars[$i]['name'],
+                                    $_POST)) {
+                                $vars[$this->vars[$i]['name']] = $_POST[$this->vars[$i]['name']];
+                            } else if ($_SERVER['REQUEST_METHOD'] === 'POST' && array_key_exists($this->vars[$i]['name'],
+                                    $_FILES)) {
+                                $vars[$this->vars[$i]['name']] = $_FILES[$this->vars[$i]['name']];
+                            } else if (array_key_exists($this->vars[$i]['name'], $_GET)) {
+                                $vars[$this->vars[$i]['name']] = $_GET[$this->vars[$i]['name']];
+                            } else if($this->vars[$i]['required']) {
+                                throw new \InvalidArgumentException('Unknown parameter value for "'.
+                                    $this->vars[$i]['name'].'"');
+                            }
+                        }
+                        ++$i;
+                    }
+
+                    $this->vars = $vars;
+                }
+                return true;
+            } else {
+                return false;
             }
-            return true;
-        } else {
-            return false;
         }
     }
 
