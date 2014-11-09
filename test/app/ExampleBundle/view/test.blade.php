@@ -5,8 +5,6 @@
     <title>Home test page</title>
 </head>
     <body>
-        Hello, {{{ $name }}}.
-
-        The current UNIX timestamp is {{{ time() }}}.
+    <h1>Hello {{{ $name }}} !</h1>
     </body>
 </html>

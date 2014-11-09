@@ -1,8 +1,9 @@
 <?php
 
-namespace Panda\Core\Component\Bundle\View;
+namespace Panda\Core\Component\Bundle\View\Resolver;
 
 use Logger;
+use Panda\Core\Component\Bundle\View\View;
 
 class PhpView implements View
 {

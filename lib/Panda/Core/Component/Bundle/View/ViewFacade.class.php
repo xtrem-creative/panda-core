@@ -2,9 +2,12 @@
 
 namespace Panda\Core\Component\Bundle\View;
 
-
 use InvalidArgumentException;
 use Panda\Core\Component\Bundle\View\Exception\MissingTemplateEngineException;
+use Panda\Core\Component\Bundle\View\Resolver\BladeView;
+use Panda\Core\Component\Bundle\View\Resolver\PhpView;
+use Panda\Core\Component\Bundle\View\Resolver\TwigView;
+use Panda\Core\Component\Bundle\View\Resolver\XslView;
 use RuntimeException;
 
 class ViewFacade implements View
@@ -93,6 +96,11 @@ class ViewFacade implements View
                  * Use raw php for templates
                  */
                 $tplEngine = new PhpView();
+            }  else if (str_ends_with($templateName, '.xsl')) {
+                /**
+                 * Use XSLT processor for templates
+                 */
+                $tplEngine = new XslView();
             } else {
                 throw new InvalidArgumentException('No template engine found for "' . (string)$templateName . '"');
             }

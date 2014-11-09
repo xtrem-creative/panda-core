@@ -1,10 +1,11 @@
 <?php
 
-namespace Panda\Core\Component\Bundle\View;
+namespace Panda\Core\Component\Bundle\View\Resolver;
 
 use Logger;
 use Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException;
 use Panda\Core\Component\Bundle\View\Exception\ResourceNotWritableException;
+use Panda\Core\Component\Bundle\View\View;
 use Philo\Blade\Blade;
 
 class BladeView implements View
@@ -44,8 +45,8 @@ class BladeView implements View
 
     /**
      * @param string $cacheDir
-     * @throws Exception\ResourceNotFoundException
-     * @throws Exception\ResourceNotWritableException
+     * @throws \Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException
+     * @throws \Panda\Core\Component\Bundle\View\Exception\ResourceNotWritableException
      */
     public function setCacheDir($cacheDir)
     {
@@ -74,7 +75,7 @@ class BladeView implements View
 
     /**
      * @param string $templatesDir
-     * @throws Exception\ResourceNotFoundException
+     * @throws \Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException
      */
     public function setTemplatesDir($templatesDir)
     {

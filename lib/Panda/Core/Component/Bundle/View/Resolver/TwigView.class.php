@@ -1,10 +1,11 @@
 <?php
 
-namespace Panda\Core\Component\Bundle\View;
+namespace Panda\Core\Component\Bundle\View\Resolver;
 
 use Logger;
 use Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException;
 use Panda\Core\Component\Bundle\View\Exception\ResourceNotWritableException;
+use Panda\Core\Component\Bundle\View\View;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 
@@ -59,8 +60,8 @@ class TwigView implements View
 
     /**
      * @param string $cacheDir
-     * @throws Exception\ResourceNotFoundException
-     * @throws Exception\ResourceNotWritableException
+     * @throws \Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException
+     * @throws \Panda\Core\Component\Bundle\View\Exception\ResourceNotWritableException
      */
     public function setCacheDir($cacheDir)
     {
@@ -110,7 +111,7 @@ class TwigView implements View
 
     /**
      * @param string $templatesDir
-     * @throws Exception\ResourceNotFoundException
+     * @throws \Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException
      */
     public function setTemplatesDir($templatesDir)
     {
@@ -131,7 +132,7 @@ class TwigView implements View
 
     /**
      * @param string $viewsDir
-     * @throws Exception\ResourceNotFoundException
+     * @throws \Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException
      */
     public function setViewsDir($viewsDir)
     {

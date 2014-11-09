@@ -11,7 +11,8 @@
     },
     "require-dev": {
         "twig/twig": "1.*",
-        "philo/laravel-blade": "dev-master"
+        "philo/laravel-blade": "dev-master",
+        "ext-xsl": "*"
     },
     "authors": [
         {"name": "Stanislas Michalak", "email": "stanislas.michalak@gmail.com"}

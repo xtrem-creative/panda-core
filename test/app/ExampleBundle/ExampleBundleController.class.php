@@ -26,6 +26,15 @@ class ExampleBundleController extends AbstractController
     }
 
     /**
+     * @RequestMapping(value="/xslt", method="GET")
+     */
+    public function testGetXsltAction($name = 'panda')
+    {
+        $this->view->setVar('name', htmlspecialchars($name));
+        return "test.xsl";
+    }
+
+    /**
      * @RequestMapping(value="/test", method="POST")
      */
     public function testPostAction()
