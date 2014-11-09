@@ -1,0 +1,11 @@
+{
+    "database": {
+        "default": "test",
+        "list": {
+            "test": {
+                "memory": true,
+                "driver": "pdo_sqlite"
+            }
+        }
+    }
+}

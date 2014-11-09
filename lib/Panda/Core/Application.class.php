@@ -4,6 +4,7 @@ namespace Panda\Core;
 
 use Logger;
 use Panda\Core\Component\Bundle\View\ViewFacade;
+use Panda\Core\Component\Config\ConfigManager;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Panda\Core\Component\Router\Route;
@@ -77,6 +78,10 @@ class Application implements \ArrayAccess
 
     public function exitSuccess(ViewFacade $view)
     {
+        if (ConfigManager::configHasChanged()) {
+            ConfigManager::saveAll();
+            $this->logger->info('Config saved".');
+        }
         $response = new Response(
             $view->getRenderedContent(),
             $view->getHttpCode(),

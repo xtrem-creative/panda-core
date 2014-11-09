@@ -19,14 +19,12 @@ class Autoloader
 
     public static function autoload($class)
     {
-        if (0 !== strpos($class, 'Panda')) {
-            return;
-        }
-
         if (0 === strpos($class, APP_NAMESPACE)) {
-            $filePath = dirname(__FILE__) . '/app/' . str_replace('\\', '/', $class);
+            $filePath = APP_DIR . str_replace('\\', '/', str_replace(APP_NAMESPACE, '', $class));
+        } else if (0 === strpos($class, 'Panda')) {
+            $filePath = dirname(dirname(dirname(__FILE__))) . '/' . str_replace('\\', '/', $class);
         } else {
-            $filePath = dirname(__FILE__) . '/../../' . str_replace('\\', '/', $class);
+            return;
         }
 
         if (is_file($filePath . '.class.php')) {

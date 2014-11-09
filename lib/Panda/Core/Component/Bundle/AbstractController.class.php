@@ -15,6 +15,7 @@ abstract class AbstractController implements Controller
     protected $bundleName;
     protected $actionName;
     protected $view;
+    protected $daos = array();
     protected $logger = null;
 
     public function __construct(Application $app, $bundleName, $actionName)
@@ -45,8 +46,19 @@ abstract class AbstractController implements Controller
         return $this->view;
     }
 
-    public function getDao($daoName)
+    public function getDao($daoName, $bundleName = null)
     {
-        // TODO: Implement getDao() method.
+        if (!array_key_exists($daoName, $this->daos)) {
+            if ($bundleName === null) {
+                $daoClass = APP_NAMESPACE . '\\' . $this->bundleName . '\\' . $daoName . 'Dao';
+            } else {
+                if (!is_file(APP_DIR . $bundleName . '/' . $daoName . 'Dao.class.php')) {
+                    throw new \InvalidArgumentException('Unknown Dao "'.$daoName.'"');
+                }
+                $daoClass = APP_NAMESPACE . '\\' . $bundleName . '\\' . $daoName . 'Dao';
+            }
+            $this->daos[$daoName] = new $daoClass();
+        }
+        return $this->daos[$daoName];
     }
 }
