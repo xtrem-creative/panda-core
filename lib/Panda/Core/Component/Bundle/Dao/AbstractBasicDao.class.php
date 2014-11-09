@@ -12,15 +12,18 @@ abstract class AbstractBasicDao
 
     public function getConnection($connectionName = null)
     {
-        $config = new Configuration();
-
         if ($connectionName === null) {
-            $defaultConnection = ConfigManager::get('database.default');
-            $connectionParams = ConfigManager::get('database.list.' . $defaultConnection);
-        } else {
-            $connectionParams = ConfigManager::get('database.list.' . $connectionName);
+            $connectionName = ConfigManager::get('database.default');
         }
 
-        return DriverManager::getConnection($connectionParams, $config);
+        if (!array_key_exists(self::$connections, $connectionName)) {
+            $config = new Configuration();
+
+            $connectionParams = ConfigManager::get('database.list.' . $connectionName);
+
+            self::$connections[$connectionName] = DriverManager::getConnection($connectionParams, $config);
+        }
+
+        return self::$connections[$connectionName];
     }
 }
