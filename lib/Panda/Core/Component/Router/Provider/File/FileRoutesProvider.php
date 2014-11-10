@@ -41,9 +41,4 @@ class FileRoutesProvider extends AbstractRoutesProvider
             $this->loadCache();
         }
     }
-
-    public function getRoutesList()
-    {
-        return $this->routes;
-    }
 }
