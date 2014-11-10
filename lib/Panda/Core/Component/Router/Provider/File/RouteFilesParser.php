@@ -3,6 +3,7 @@
 namespace Panda\Core\Component\Router\Provider\File;
 
 
+use Logger;
 use Panda\Core\Component\Router\Provider\File\Attribute\BundleAttribute;
 use Panda\Core\Component\Router\Provider\File\Attribute\UrlPatternAttribute;
 
