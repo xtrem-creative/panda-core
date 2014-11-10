@@ -6,25 +6,33 @@ use Panda\Core\Component\Router\Provider\AbstractRoutesProvider;
 
 class FileRoutesProvider extends AbstractRoutesProvider
 {
-    public function reloadRoutes($reloadCache = false)
+    private $routeFilesParser;
+
+    public function __construct()
+    {
+        $this->routeFilesParser = new RouteFilesParser();
+
+        //Load basic attributes knowledge
+        $this->routeFilesParser->addKnownAttribute
+        ('Panda\Core\Component\Router\Provider\File\Attribute\ActionAttribute', 'action');
+    }
+
+        public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {
             $bundlesRoutesFiles = glob(APP_DIR . '*Bundle/res/config/routes.php');
 
             foreach ($bundlesRoutesFiles as $routesFile) {
-                $routes = require_once $routesFile;
-                $bundleName = str_replace('/res/config/routes.php', '', str_replace(APP_DIR, '', $routesFile));
+                $routesData = $this->routeFilesParser->parse($routesFile);
 
-                foreach ($routes as $route => $config) {
-                    if (array_key_exists($route, $this->_routes)) {
-                        throw new \RuntimeException('Duplicate route "'.$route.'" in "'.$bundleName.'"');
-
-                    } else {
-                        $vars = array_key_exists('vars', $config) ? $config['vars'] : null;
-                        $method = array_key_exists('method', $config) ? explode('|',
-                            $config['method']) : array('GET', 'POST');
-                        $this->addRoute($route, $bundleName, $config['action'], $method, $vars);
-                    }
+                foreach ($routesData as $route) {
+                    $this->addRoute(
+                        $route['urlPattern']->getValue(),
+                        $route['bundle']->getName(),
+                        $route['action']->getName(),
+                        array_key_exists('method', $route) ? $route['method']->getValue() : array('GET', 'POST'),
+                        array_key_exists('vars', $route) ? $route['vars']->getValue() : array()
+                    );
                 }
             }
 
