@@ -2,9 +2,11 @@
 
 namespace Panda\Core\Component\Router;
 
+use Panda\Core\Component\Config\ConfigManager;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Panda\Core\Component\Router\Provider\Annotation\AnnotationRoutesProvider;
+use Panda\Core\Component\Router\Provider\File\FileRoutesProvider;
 use Panda\Core\Component\Router\Provider\RoutesProvider;
 
 /**
@@ -17,7 +19,19 @@ class Router
 
     public function __construct()
     {
-        $this->setRoutesProvider(new AnnotationRoutesProvider());
+        if (ConfigManager::exists('router.provider')) {
+            $providerName = ConfigManager::get('router.provider');
+
+            if ($providerName === 'Annotation') {
+                $this->setRoutesProvider(new AnnotationRoutesProvider());
+            } else if ($providerName === 'File') {
+                $this->setRoutesProvider(new FileRoutesProvider());
+            } else {
+                throw new \InvalidArgumentException('Invalid routes provider "'.$providerName.'"');
+            }
+        } else {
+            $this->setRoutesProvider(new FileRoutesProvider());
+        }
     }
 
     public function findMatchingRoute($url)

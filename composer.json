@@ -19,6 +19,6 @@
         {"name": "Stanislas Michalak", "email": "stanislas.michalak@gmail.com"}
     ],
     "autoload": {
-        "psr-4": { "Panda\\": "lib/" }
+        "psr-4": { "Panda\\Core\\": "lib/Core/" }
     }
 }

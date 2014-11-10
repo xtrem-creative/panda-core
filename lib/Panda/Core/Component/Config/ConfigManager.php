@@ -30,7 +30,7 @@ class ConfigManager
 
     public static function exists($key)
     {
-        self::getInstance()->varExists($key);
+        return self::getInstance()->varExists($key);
     }
 
     public static function getList()

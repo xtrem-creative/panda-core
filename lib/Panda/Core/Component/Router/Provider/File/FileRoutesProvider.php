@@ -6,8 +6,6 @@ use Panda\Core\Component\Router\Provider\AbstractRoutesProvider;
 
 class FileRoutesProvider extends AbstractRoutesProvider
 {
-    private $routes = array();
-
     public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {
