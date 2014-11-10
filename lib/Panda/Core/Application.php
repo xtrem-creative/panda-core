@@ -38,6 +38,7 @@ class Application implements \ArrayAccess
 
     public function loadDependencies()
     {
+        Autoloader::register();
         foreach ($this->dependencies as $dependency) {
             require_once $dependency;
         }

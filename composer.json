@@ -1,6 +1,6 @@
 {
     "name": "xtremcreative/panda-core",
-    "description": "The Panda framework",
+    "description": "The Panda framework - core component",
     "type": "library",
     "require": {
       "php": ">=5.3.3",
@@ -10,6 +10,7 @@
       "ext-mcrypt": "*"
     },
     "require-dev": {
+        "phpunit/phpunit": "~3.7",
         "twig/twig": "1.*",
         "philo/laravel-blade": "dev-master",
         "ext-xsl": "*"
@@ -18,6 +19,6 @@
         {"name": "Stanislas Michalak", "email": "stanislas.michalak@gmail.com"}
     ],
     "autoload": {
-        "psr-0": { "Panda\\": "lib/" }
+        "psr-4": { "Panda\\": "lib/" }
     }
 }

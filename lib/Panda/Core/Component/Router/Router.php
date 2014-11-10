@@ -30,10 +30,10 @@ class Router
     public function reloadRoutes($reloadCache = false)
     {
         if (empty($routes) || $reloadCache) {
-            $bundleControllers = glob(APP_DIR . '*Bundle/*BundleController.class.php');
+            $bundleControllers = glob(APP_DIR . '*Bundle/*BundleController.php');
 
             foreach ($bundleControllers as $controller) {
-                $tags = $this->annotationParser->parse(str_replace('/', '\\', str_replace('.class.php', '',
+                $tags = $this->annotationParser->parse(str_replace('/', '\\', str_replace('.php', '',
                     str_replace(APP_DIR, APP_NAMESPACE . '\\', $controller))));
 
                 foreach ($tags as $tag) {

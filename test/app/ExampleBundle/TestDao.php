@@ -8,10 +8,12 @@ class TestDao extends AbstractBasicDao
 {
     public function createTestDb()
     {
-        $sql = 'CREATE TABLE test(
+        $sql = 'CREATE TABLE IF NOT EXISTS test(
             id INTEGER PRIMARY KEY,
             name VARCHAR NOT NULL
-        )';
+        );
+        INSERT INTO test VALUES(1,"test");
+        ';
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute();
     }
@@ -19,6 +21,8 @@ class TestDao extends AbstractBasicDao
     public function selectTestResults()
     {
         $sql = 'SELECT * FROM test';
-        return $this->getConnection()->query($sql);
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll();
     }
 }

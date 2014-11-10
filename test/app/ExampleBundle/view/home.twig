@@ -6,5 +6,27 @@
     </head>
     <body>
         <h1>Hello {{ name }} !</h1>
+
+        <h2>Query results</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for r in queryResults %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.name }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="2">No results</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </body>
 </html>

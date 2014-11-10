@@ -21,18 +21,12 @@ class Autoloader
     {
         if (0 === strpos($class, APP_NAMESPACE)) {
             $filePath = APP_DIR . str_replace('\\', '/', str_replace(APP_NAMESPACE, '', $class));
-        } else if (0 === strpos($class, 'Panda')) {
-            $filePath = dirname(dirname(dirname(__FILE__))) . '/' . str_replace('\\', '/', $class);
         } else {
             return;
         }
 
-        if (is_file($filePath . '.class.php')) {
-            require $filePath . '.class.php';
-        } else if (is_file($filePath . '.php')) {
+        if (is_file($filePath . '.php')) {
             require $filePath . '.php';
         }
     }
 }
-
-Autoloader::register();

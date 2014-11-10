@@ -13,7 +13,7 @@ class ExampleBundleController extends AbstractController
     public function testGetTwigAction($name = 'panda')
     {
         $this->getDao('Test')->createTestDb();
-        var_dump($this->getDao('Test')->selectTestResults());
+        $this->view->setVar('queryResults', $this->getDao('Test')->selectTestResults());
         $this->view->setVar('name', htmlspecialchars($name));
         return "home.twig";
     }
