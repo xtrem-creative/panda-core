@@ -2,11 +2,17 @@
 
 namespace Panda\Core\Component\Router\Provider\File;
 
-
 use Logger;
 use Panda\Core\Component\Router\Provider\File\Attribute\BundleAttribute;
 use Panda\Core\Component\Router\Provider\File\Attribute\UrlPatternAttribute;
+use ReflectionClass;
 
+/**
+ * Class RouteFilesParser
+ * A parser for routes config files. Checks whether the entries are correct
+ * and gives a readable set of route attributes.
+ * @package Panda\Core\Component\Router\Provider\File
+ */
 class RouteFilesParser
 {
     private $knownAttributes = array();

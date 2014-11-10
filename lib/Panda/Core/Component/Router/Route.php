@@ -38,7 +38,6 @@ class Route
                     unset($matches[0]);
                     $matches = array_values($matches);
 
-                    $varsCount = count($this->vars);
                     $matchesCount = count($matches);
 
                     $vars = array();
@@ -70,6 +69,8 @@ class Route
             } else {
                 return false;
             }
+        } else {
+            throw new \InvalidArgumentException('Unable to parse url "'.$url.'".');
         }
     }
 

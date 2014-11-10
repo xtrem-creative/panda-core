@@ -19,7 +19,9 @@ class ViewFacade implements View
 
     public function __construct()
     {
-
+        if (!file_exists(RESOURCES_DIR . 'cache/view')) {
+            mkdir(RESOURCES_DIR . 'cache/view');
+        }
     }
 
     public function getHttpCode()
@@ -75,7 +77,8 @@ class ViewFacade implements View
                 if (class_exists('Twig_Loader_Filesystem') && class_exists('Twig_Environment') && class_exists
                     ('Twig_SimpleFilter')
                 ) {
-                    $tplEngine = new TwigView(RESOURCES_DIR . 'template/', $bundleViewsDir, RESOURCES_DIR . 'cache/');
+                    $tplEngine = new TwigView(RESOURCES_DIR . 'template/', $bundleViewsDir,
+                        RESOURCES_DIR . 'cache/view/');
                 } else {
                     throw new MissingTemplateEngineException('The Twig template engine is missing :/ Please add the
                     required dependency : "twig/twig"');
@@ -86,7 +89,8 @@ class ViewFacade implements View
                  * @link http://laravel.com/docs/4.2/templates
                  */
                 if (class_exists('Philo\Blade\Blade')) {
-                    $tplEngine = new BladeView(RESOURCES_DIR . 'template/', $bundleViewsDir, RESOURCES_DIR . 'cache/');
+                    $tplEngine = new BladeView(RESOURCES_DIR . 'template/', $bundleViewsDir,
+                        RESOURCES_DIR . 'cache/view/');
                 } else {
                     throw new MissingTemplateEngineException('The Blade template engine is missing :/ Please add the
                     required dependency : "philo/laravel-blade"');

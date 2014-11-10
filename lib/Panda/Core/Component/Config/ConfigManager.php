@@ -13,39 +13,69 @@ class ConfigManager
         $this->loadConfig();
     }
 
+    /**
+     * Set an entry in the config
+     * @param $key
+     * @param $value
+     */
     public static function set($key, $value)
     {
         self::getInstance()->setVar($key, $value);
     }
 
+    /**
+     * Get an entry from the config
+     * @param $key
+     * @return array|null
+     */
     public static function get($key)
     {
         return self::getInstance()->getVar($key);
     }
 
+    /**
+     * Remove an entry from the config
+     * @param $key
+     */
     public static function remove($key)
     {
         self::getInstance()->removeVar($key);
     }
 
+    /**
+     * Check whether a config entry identified by the given key exists
+     * @param $key
+     * @return bool
+     */
     public static function exists($key)
     {
         return self::getInstance()->varExists($key);
     }
 
+    /**
+     * Get the list of all known config entries
+     * @return array
+     */
     public static function getList()
     {
         return self::getInstance()->getAllConfig();
     }
 
+    /**
+     * Save the current config
+     */
     public static function saveAll()
     {
         self::getInstance()->saveConfig();
     }
 
+    /***
+     * Check whether the config has changed
+     * @return bool
+     */
     public static function configHasChanged()
     {
-        self::getInstance()->getConfigHasChanged();
+        return self::getInstance()->getConfigHasChanged();
     }
 
     private static function getInstance()
@@ -66,7 +96,7 @@ class ConfigManager
     {
         $pos = strpos($key, '.');
         if ($pos !== false) {
-            $this->_setKeyRecursive(substr($key, $pos + 1), $value, $array[substr($key, 0, $pos)]);
+            $this->setKeyRecursive(substr($key, $pos + 1), $value, $array[substr($key, 0, $pos)]);
         } else {
             if (isset($array)) {
                 $array[$key] = $value;

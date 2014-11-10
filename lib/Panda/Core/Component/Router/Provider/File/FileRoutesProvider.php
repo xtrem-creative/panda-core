@@ -17,7 +17,7 @@ class FileRoutesProvider extends AbstractRoutesProvider
         ('Panda\Core\Component\Router\Provider\File\Attribute\ActionAttribute', 'action');
     }
 
-        public function reloadRoutes($reloadCache = false)
+    public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {
             $bundlesRoutesFiles = glob(APP_DIR . '*Bundle/res/config/routes.php');
