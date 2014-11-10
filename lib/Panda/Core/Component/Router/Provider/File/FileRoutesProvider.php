@@ -29,7 +29,7 @@ class FileRoutesProvider extends AbstractRoutesProvider
                     $this->addRoute(
                         $route['urlPattern']->getValue(),
                         $route['bundle']->getName(),
-                        $route['action']->getName(),
+                        $route['action']->getName() . 'Action',
                         array_key_exists('method', $route) ? $route['method']->getValue() : array('GET', 'POST'),
                         array_key_exists('vars', $route) ? $route['vars']->getValue() : array()
                     );

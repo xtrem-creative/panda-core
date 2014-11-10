@@ -24,6 +24,12 @@ class RouteFilesParser
         $this->logger = Logger::getLogger(__CLASS__);
     }
 
+    /**
+     * Parse a route config file
+     * @param $routesFile
+     * @return array
+     * @throws \RuntimeException
+     */
     public function parse($routesFile)
     {
         $routesRaw = require_once $routesFile;
@@ -39,7 +45,7 @@ class RouteFilesParser
                 foreach ($config as $configKey => $configValue) {
                     if (array_key_exists($configKey, $this->knownAttributes)) {
                         $reflection = new ReflectionClass($this->knownAttributes[$configKey]);
-                        $attrList[$configKey] = $reflection->newInstanceArgs($configValue);
+                        $attrList[$configKey] = $reflection->newInstance($configValue);
                     } else {
                         $this->logger->info('Unknown config key "'.$configKey.'" for route file "'.$routesFile.'"');
                     }
