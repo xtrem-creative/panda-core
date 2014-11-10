@@ -13,5 +13,15 @@ class PhpView implements View
     {
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Render "'.$templateName.'" with raw PHP engine');
+
+        ob_start();
+        extract($vars, EXTR_PREFIX_ALL, 'v');
+        include $templateName;
+
+        $result = ob_get_clean();
+
+        $this->logger->debug('Render "'.$templateName.'": done');
+
+        return $result;
     }
 }

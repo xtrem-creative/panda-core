@@ -27,6 +27,15 @@ class ExampleBundleController extends AbstractController
     }
 
     /**
+     * @RequestMapping(value="/php", method="GET")
+     */
+    public function testGetPhpAction($name = 'panda')
+    {
+        $this->view->setVar('name', htmlspecialchars($name));
+        return "test.php";
+    }
+
+    /**
      * @RequestMapping(value="/xslt", method="GET")
      */
     public function testGetXsltAction($name = 'panda')
