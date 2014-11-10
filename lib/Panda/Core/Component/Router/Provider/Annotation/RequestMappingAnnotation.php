@@ -1,6 +1,6 @@
 <?php
 
-namespace Panda\Core\Component\Router\Annotation;
+namespace Panda\Core\Component\Router\Provider\Annotation;
 
 use Panda\Core\Tool\Annotation\Annotation;
 use ReflectionMethod;

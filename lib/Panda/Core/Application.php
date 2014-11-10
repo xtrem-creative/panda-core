@@ -47,7 +47,6 @@ class Application implements \ArrayAccess
     public function run()
     {
         $router = $this->getComponent('Router\Router');
-        $router->reloadRoutes();
         $this->components['Symfony\Request'] = Request::createFromGlobals();
 
         try {

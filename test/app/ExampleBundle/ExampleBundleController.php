@@ -8,7 +8,6 @@ class ExampleBundleController extends AbstractController
 {
     /**
      * @RequestMapping(value="/")
-     * @Secured([ "ROLE_MEMBER" ])
      */
     public function testGetTwigAction($name = 'panda')
     {

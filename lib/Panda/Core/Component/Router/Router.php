@@ -4,7 +4,8 @@ namespace Panda\Core\Component\Router;
 
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
-use Panda\Core\Tool\Annotation\AnnotationParserImpl;
+use Panda\Core\Component\Router\Provider\Annotation\AnnotationRoutesProvider;
+use Panda\Core\Component\Router\Provider\RoutesProvider;
 
 /**
  * A simple routing system manager
@@ -12,48 +13,19 @@ use Panda\Core\Tool\Annotation\AnnotationParserImpl;
  */
 class Router
 {
-    private $routes = array();
-    private $annotationParser;
+    private $routesProvider;
 
     public function __construct()
     {
-        $this->annotationParser = new AnnotationParserImpl();
-        $this->addAvailableAnnotation('Panda\Core\Component\Router\Annotation\RequestMappingAnnotation',
-            'RequestMapping');
-    }
-
-    public function addAvailableAnnotation($className, $shortName)
-    {
-        $this->annotationParser->addKnownAnnotation($className, $shortName);
-    }
-
-    public function reloadRoutes($reloadCache = false)
-    {
-        if (empty($routes) || $reloadCache) {
-            $bundleControllers = glob(APP_DIR . '*Bundle/*BundleController.php');
-
-            foreach ($bundleControllers as $controller) {
-                $tags = $this->annotationParser->parse(str_replace('/', '\\', str_replace('.php', '',
-                    str_replace(APP_DIR, APP_NAMESPACE . '\\', $controller))));
-
-                foreach ($tags as $tag) {
-                    $this->addRoute($tag->getValue(), $tag->getBundle(), $tag->getAction(), $tag->getMethod(),
-                        $tag->getVars());
-                }
-            }
-        }
-    }
-
-    public function addRoute($pattern, $bundle, $action, $httpMethod, $vars)
-    {
-        $this->routes[] = new Route($pattern, $bundle, $action, $httpMethod, $vars);
+        $this->setRoutesProvider(new AnnotationRoutesProvider());
     }
 
     public function findMatchingRoute($url)
     {
         $badMethod = false;
+        $routes = $this->routesProvider->getRoutesList();
 
-        foreach ($this->routes as $route) {
+        foreach ($routes as $route) {
             if ($route->match($url)) {
                 if (is_array($route->getHttpMethod()) && !in_array($_SERVER['REQUEST_METHOD'],
                             $route->getHttpMethod())) {
@@ -71,8 +43,13 @@ class Router
         }
     }
 
-    public function getRoutes()
+    public function getRoutesProvider()
     {
-        return $this->routes;
+        return $this->routesProvider;
+    }
+
+    public function setRoutesProvider(RoutesProvider $routesProvider)
+    {
+        $this->routesProvider = $routesProvider;
     }
 } 
