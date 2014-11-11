@@ -7,6 +7,7 @@ use Panda\Core\Application;
 use Panda\Core\Component\Bundle\View\ViewFacade;
 use ReflectionClass;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 abstract class AbstractController implements Controller
 {
@@ -25,7 +26,7 @@ abstract class AbstractController implements Controller
         $this->app = $app;
         $this->bundleName = $bundleName;
         $this->actionName = $actionName;
-        $this->view = new ViewFacade();
+        $this->view = new ViewFacade($app->getComponent('Symfony\Response'));
     }
 
     public function exec()
@@ -40,7 +41,13 @@ abstract class AbstractController implements Controller
         $viewName = $method->invokeArgs($this, $this->app->getRoute()->getVars());
 
         if ($viewName !== null) {
-            $this->view->render(APP_DIR . $this->bundleName . '/view/' . $viewName);
+            if (str_starts_with($viewName, 'redirect:')) {
+                $response = new RedirectResponse(substr($viewName, strlen('redirect:')));
+                $this->app['Symfony\Response']->prepare($this->app['Symfony\Request']);
+                $response->send();
+            } else {
+                $this->view->render(APP_DIR . $this->bundleName . '/view/' . $viewName);
+            }
         }
 
         return $this->view;

@@ -9,39 +9,39 @@ use Panda\Core\Component\Bundle\View\Resolver\PhpView;
 use Panda\Core\Component\Bundle\View\Resolver\TwigView;
 use Panda\Core\Component\Bundle\View\Resolver\XslView;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Response;
 
 class ViewFacade implements View
 {
-    protected $httpCode = 200;
-    protected $contentType = 'text/html';
+    protected $response;
     protected $vars = array();
-    protected $renderedContent;
 
-    public function __construct()
+    public function __construct(Response $response)
     {
         if (!file_exists(RESOURCES_DIR . 'cache/view')) {
             mkdir(RESOURCES_DIR . 'cache/view');
         }
+        $this->response = $response;
     }
 
     public function getHttpCode()
     {
-        return $this->httpCode;
+        return $this->response->getStatusCode();
     }
 
     public function setHttpCode($httpCode)
     {
-
+        $this->response->setStatusCode($httpCode);
     }
 
     public function getContentType()
     {
-        return $this->contentType;
+        return $this->response->headers->get('Content-Type');
     }
 
     public function setContentType($contentType)
     {
-
+        $this->response->headers->set('Content-Type', $contentType);
     }
 
     public function setVar($name, $value)
@@ -65,8 +65,15 @@ class ViewFacade implements View
         throw new InvalidArgumentException('Unknown template var "' . (string) $name . '"');
     }
 
-    public function render($templateName, $vars = null)
+    public function render($templateName = null, $vars = null)
     {
+        if ($templateName === null && ($this->getHttpCode() < 200 || $this->getHttpCode() > 226)) {
+            //Render error default page
+            $templateName = __DIR__ . '/Resource/default_error.php';
+            $this->vars = array(
+                'errorCode' => $this->getHttpCode()
+            );
+        }
         if (is_file($templateName)) {
             $bundleViewsDir = substr($templateName, 0, strrpos($templateName, '/'));
             if (str_ends_with($templateName, '.twig')) {
@@ -109,7 +116,7 @@ class ViewFacade implements View
                 throw new InvalidArgumentException('No template engine found for "' . (string)$templateName . '"');
             }
 
-            $this->renderedContent = $tplEngine->render($templateName, $this->vars);
+            $this->response->setContent($tplEngine->render($templateName, $this->vars));
         } else {
             throw new InvalidArgumentException('"' . (string)$templateName . '" template doesn\'t exists');
         }

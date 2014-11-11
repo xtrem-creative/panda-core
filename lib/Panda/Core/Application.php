@@ -8,6 +8,10 @@ use Panda\Core\Component\Config\ConfigManager;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Panda\Core\Component\Router\Route;
+use Panda\Core\Event\Observable;
+use Panda\Core\Event\ObservableImpl;
+use Panda\Core\Event\Observer;
+use Panda\Core\Interceptor\HandlerInterceptor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -15,12 +19,14 @@ use Symfony\Component\HttpFoundation\Response;
  * The main class of panda-core
  * @package Panda\Core
  */
-class Application implements \ArrayAccess
+class Application extends ObservableImpl implements \ArrayAccess
 {
     private $dependencies = array(
         'Tool/Function/String.php'
     );
     private $name;
+    private $interceptors = array();
+    private $services = array();
     private $components = array();
     private $logger = null;
     private $route;
@@ -34,20 +40,18 @@ class Application implements \ArrayAccess
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Panda framework started.');
         $this->setName($name);
+        $this->loadServices();
+        $this->loadInterceptors();
     }
 
-    public function loadDependencies()
-    {
-        Autoloader::register();
-        foreach ($this->dependencies as $dependency) {
-            require_once $dependency;
-        }
-    }
-
+    /**
+     * Run the application
+     */
     public function run()
     {
         $router = $this->getComponent('Router\Router');
         $this->components['Symfony\Request'] = Request::createFromGlobals();
+        $this->components['Symfony\Response'] = Response::create();
 
         try {
             $this->route = $router->findMatchingRoute(str_replace(WEB_ROOT, '/',
@@ -59,7 +63,23 @@ class Application implements \ArrayAccess
             $this->exitFailure(405);
         }
 
+        //Notify interceptors
+        foreach ($this->interceptors as $interceptor) {
+            if (!$interceptor->preHandle($this['Symfony\Request'], $this->components['Symfony\Response'])) {
+                $this->logger->debug('Interceptor preHandle() interrupts normal process.');
+                exit;
+            }
+        }
+
         $view = $this->getController($this->route)->exec();
+
+        //Notify interceptors
+        foreach ($this->interceptors as $interceptor) {
+            if (!$interceptor->postHandle($this['Symfony\Request'], $this->components['Symfony\Response'], $view)) {
+                $this->logger->debug('Interceptor postHandle() interrupts normal process.');
+                exit;
+            }
+        }
 
         if ($view->getHttpCode() >= 200 && $view->getHttpCode() <= 226) {
             $this->exitSuccess($view);
@@ -71,8 +91,13 @@ class Application implements \ArrayAccess
     public function exitFailure($httpCode)
     {
         $this->logger->debug('Exit failure with HTTP code "'.$httpCode.'".');
-        //TODO! Display error
-        echo 'Error:' . $httpCode;
+        $view = new ViewFacade($this->components['Symfony\Response']);
+        $view->setHttpCode($httpCode);
+
+        $view->render();
+
+        $this->components['Symfony\Response']->prepare($this->components['Symfony\Request']);
+        $this->components['Symfony\Response']->send();
         exit;
     }
 
@@ -82,14 +107,18 @@ class Application implements \ArrayAccess
             ConfigManager::saveAll();
             $this->logger->info('Config saved".');
         }
-        $response = new Response(
-            $view->getRenderedContent(),
-            $view->getHttpCode(),
-            array('content-type', $view->getContentType())
-        );
+
+        foreach ($this->interceptors as $interceptor) {
+            if (!$interceptor->afterCompletition($this['Symfony\Request'], $this->components['Symfony\Response'])) {
+                $this->logger->debug('Interceptor afterCompletition() interrupts normal process.');
+                exit;
+            }
+        }
+
         $execTime = microtime(true) - $this->startupTime;
         $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$execTime.' s.');
-        $response->send();
+        $this->components['Symfony\Response']->prepare($this->components['Symfony\Request']);
+        $this->components['Symfony\Response']->send();
         exit;
     }
 
@@ -147,6 +176,47 @@ class Application implements \ArrayAccess
     public function setRoute($route)
     {
         $this->route = $route;
+        $this->notifyObservers();
+    }
+
+    public function bindInterceptor(HandlerInterceptor $interceptor)
+    {
+        if (in_array($interceptor, $this->interceptors)) {
+            throw new \RuntimeException('Already bind interceptor.');
+        }
+        $this->interceptors[] = $interceptor;
+    }
+
+    private function loadDependencies()
+    {
+        Autoloader::register();
+        foreach ($this->dependencies as $dependency) {
+            require_once $dependency;
+        }
+    }
+
+    private function loadServices()
+    {
+        $this->logger->debug('Loading services.');
+        $services = ConfigManager::get('services');
+
+        if (!empty($services)) {
+            foreach ($services as $serviceName => $config) {
+                //TODO!
+            }
+        }
+    }
+
+    private function loadInterceptors()
+    {
+        $this->logger->debug('Loading interceptors.');
+        $interceptors = ConfigManager::get('interceptors');
+
+        if (!empty($interceptors)) {
+            foreach ($interceptors as $interceptorName => $config) {
+                //TODO!
+            }
+        }
     }
 
     /**
