@@ -7,6 +7,7 @@
       "apache/log4php": "2.3.0",
       "symfony/http-foundation": "2.1.*",
       "doctrine/dbal": "2.4.3",
+      "filp/whoops": "~1.0",
       "ext-mcrypt": "*"
     },
     "require-dev": {

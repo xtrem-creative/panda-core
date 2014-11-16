@@ -8,6 +8,7 @@ use Panda\Core\Component\Config\ConfigManager;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Panda\Core\Component\Router\Route;
+use Panda\Core\Component\Debug\Debug;
 use Panda\Core\Event\Observable;
 use Panda\Core\Event\ObservableImpl;
 use Panda\Core\Event\Observer;
@@ -24,7 +25,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     private $dependencies = array(
         'Tool/Function/String.php'
     );
-    private $name;
+    private $environment;
     private $interceptors = array();
     private $services = array();
     private $components = array();
@@ -32,14 +33,16 @@ class Application extends ObservableImpl implements \ArrayAccess
     private $route;
     private $startupTime;
 
-    public function __construct($name = 'prod')
+    public function __construct($environment = 'prod')
     {
         $this->startupTime = microtime(true);
+        ConfigManager::setEnvironment($environment);
+        Debug::register($this);
         $this->loadDependencies();
         Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Panda framework started.');
-        $this->setName($name);
+        $this->setEnvironment($environment);
         $this->loadServices();
         $this->loadInterceptors();
     }
@@ -140,25 +143,25 @@ class Application extends ObservableImpl implements \ArrayAccess
     }
 
     /**
-     * Get the application name
-     * @return string The application name
+     * Get the application environment name
+     * @return string The application environment name
      */
-    public function getName()
+    public function getEnvironment()
     {
-        return $this->name;
+        return $this->environment;
     }
 
     /**
-     * Set the application name
-     * @param string $name The application name
+     * Set the application environnement name
+     * @param string $environment The application environement name
      * @throws \InvalidArgumentException
      */
-    public function setName($name)
+    public function setEnvironment($environment)
     {
-        if (is_string($name) && !empty($name)) {
-            $this->name = $name;
+        if (is_string($environment) && !empty($environment)) {
+            $this->environment = $environment;
         } else {
-            throw new \InvalidArgumentException('Invalid application name "'.$name.'"');
+            throw new \InvalidArgumentException('Invalid application environment name "'.$environment.'"');
         }
     }
 

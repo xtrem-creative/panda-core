@@ -5,12 +5,18 @@ namespace Panda\Core\Component\Config;
 class ConfigManager
 {
     private static $instance;
+    private static $environment;
     private $config = array();
     private $configHasChanged = false;
 
     private function __construct()
     {
         $this->loadConfig();
+    }
+
+    public static function setEnvironment($environment)
+    {
+        self::$environment = $environment;
     }
 
     /**
@@ -150,6 +156,11 @@ class ConfigManager
     {
         if (is_file(RESOURCES_DIR . 'config/config.json')) {
             $this->config = json_decode(file_get_contents(RESOURCES_DIR . 'config/config.json'), true);
+            if (is_file(RESOURCES_DIR . 'config/'.self::$environment.'/config.json')) {
+                $this->config = array_merge($this->config, json_decode(file_get_contents(RESOURCES_DIR . 'config/'
+                    .self::$environment
+                    .'/config.json'), true));
+            }
         } else {
             throw new \RuntimeException('Unable to load the config file');
         }
@@ -157,7 +168,11 @@ class ConfigManager
 
     private function saveConfig()
     {
-        file_put_contents(RESOURCES_DIR . 'config/config.json', json_encode($this->getAllConfig()));
+        if (is_file(RESOURCES_DIR . 'config/'.self::$environment.'/config.json')) {
+            file_put_contents(RESOURCES_DIR . 'config/'.self::$environment.'/config.json', json_encode($this->getAllConfig()));
+        } else {
+            file_put_contents(RESOURCES_DIR . 'config/config.json', json_encode($this->getAllConfig()));
+        }
     }
 
     private function getAllConfig()

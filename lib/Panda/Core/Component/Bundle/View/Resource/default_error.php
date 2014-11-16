@@ -8,6 +8,6 @@
         <h1><?php echo $v_errorCode; ?></h1>
         <p>An error occured</p>
         <hr />
-        <address>Powered by Panda Frawork</address>
+        <address>Powered by Panda Framework</address>
     </body>
 </html>

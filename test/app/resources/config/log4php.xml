@@ -2,9 +2,9 @@
 <configuration xmlns="http://logging.apache.org/log4php/">
     <appender name="default" class="LoggerAppenderDailyFile">
         <layout class="LoggerLayoutPattern">
-            <param name="conversionPattern" value="%date{H:i:s} [%p] [%logger] %message%newline" />
+            <param name="conversionPattern" value="%date{H:i:s} [%p] [%logger] %message%newline%ex" />
         </layout>
-        <param name="file" value="./resources/log/panda-test-%s.log" />
+        <param name="file" value="./app/resources/log/panda-test-%s.log" />
         <param name="append" value="true" />
     </appender>
     <root>
