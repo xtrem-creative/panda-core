@@ -8,12 +8,13 @@ use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Panda\Core\Component\Router\Provider\Annotation\AnnotationRoutesProvider;
 use Panda\Core\Component\Router\Provider\File\FileRoutesProvider;
 use Panda\Core\Component\Router\Provider\RoutesProvider;
+use Panda\Core\Event\ObservableImpl;
 
 /**
  * A simple routing system manager
  * @package Panda\Core\Component\Router
  */
-class Router
+class Router extends ObservableImpl
 {
     private $routesProvider;
 
@@ -65,5 +66,6 @@ class Router
     public function setRoutesProvider(RoutesProvider $routesProvider)
     {
         $this->routesProvider = $routesProvider;
+        $this->notify();
     }
 } 

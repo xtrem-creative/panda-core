@@ -176,7 +176,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     public function setRoute($route)
     {
         $this->route = $route;
-        $this->notifyObservers();
+        $this->notify();
     }
 
     public function bindInterceptor(HandlerInterceptor $interceptor)
@@ -202,7 +202,16 @@ class Application extends ObservableImpl implements \ArrayAccess
 
         if (!empty($services)) {
             foreach ($services as $serviceName => $config) {
-                //TODO!
+                if (array_key_exists('className', $config) && !class_exists($config['className'])) {
+                    throw new \RuntimeException('Unable to load "'.$serviceName.'" service: class not found.');
+                }
+                $reflectionClass = new \ReflectionClass($config['className']);
+                if (!$reflectionClass->implementsInterface('Panda\\Core\\Service\\Service')) {
+                    throw new \RuntimeException('Unable to load "'.$serviceName.'" service: class doesn\'t implement
+                    Service interface.');
+                }
+                unset($config['className']);
+                $this->services[$serviceName] = $reflectionClass->newInstanceArgs($config);
             }
         }
     }
@@ -214,7 +223,16 @@ class Application extends ObservableImpl implements \ArrayAccess
 
         if (!empty($interceptors)) {
             foreach ($interceptors as $interceptorName => $config) {
-                //TODO!
+                if (array_key_exists('className', $config) && !class_exists($config['className'])) {
+                    throw new \RuntimeException('Unable to load "'.$interceptorName.'" service: class not found.');
+                }
+                $reflectionClass = new \ReflectionClass($config['className']);
+                if (!$reflectionClass->implementsInterface('Panda\\Core\\Interceptor\\HandlerInterceptor')) {
+                    throw new \RuntimeException('Unable to load "'.$interceptorName.'" interceptor: class doesn\'t
+                    implement HandlerInterceptor interface.');
+                }
+                unset($config['className']);
+                $this->services[$interceptorName] = $reflectionClass->newInstanceArgs($config);
             }
         }
     }

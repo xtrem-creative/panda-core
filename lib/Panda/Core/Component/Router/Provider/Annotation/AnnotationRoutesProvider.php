@@ -25,8 +25,10 @@ class AnnotationRoutesProvider extends AbstractRoutesProvider
                     str_replace(APP_DIR, APP_NAMESPACE . '\\', $controller))));
 
                 foreach ($tags as $tag) {
-                    $this->addRoute($tag->getValue(), $tag->getBundle(), $tag->getAction(), $tag->getMethod(),
-                        $tag->getVars());
+                    if ($tag instanceof RequestMappingAnnotation) {
+                        $this->addRoute($tag->getValue(), $tag->getBundle(), $tag->getAction(), $tag->getMethod(),
+                            $tag->getVars());
+                    }
                 }
             }
             $this->saveCache();
