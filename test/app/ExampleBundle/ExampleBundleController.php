@@ -14,7 +14,6 @@ class ExampleBundleController extends AbstractController
         $this->getDao('Test')->createTestDb();
         $this->view->setVar('queryResults', $this->getDao('Test')->selectTestResults());
         $this->view->setVar('name', htmlspecialchars($name));
-        echo name;
         return "home.twig";
     }
 

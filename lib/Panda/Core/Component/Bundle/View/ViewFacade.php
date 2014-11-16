@@ -68,8 +68,16 @@ class ViewFacade implements View
     public function render($templateName = null, $vars = null)
     {
         if ($templateName === null && ($this->getHttpCode() < 200 || $this->getHttpCode() > 226)) {
-            //Render error default page
-            $templateName = __DIR__ . '/Resource/default_error.php';
+            if (is_file(RESOURCES_DIR . 'template/error.php')) {
+                $templateName = RESOURCES_DIR . 'template/error.php';
+            } else if (is_file(RESOURCES_DIR . 'template/error.twig')) {
+                $templateName = RESOURCES_DIR . 'template/error.twig';
+            } else if (is_file(RESOURCES_DIR . 'template/error.blade.php')) {
+                $templateName = RESOURCES_DIR . 'template/error.blade.php';
+            } else {
+                //Render error default page
+                $templateName = __DIR__ . '/Resource/default_error.php';
+            }
             $this->vars = array(
                 'errorCode' => $this->getHttpCode()
             );
