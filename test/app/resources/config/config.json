@@ -1,5 +1,5 @@
 {
-    "database": {
+    "datasources": {
         "default": "test",
         "list": {
             "test": {
