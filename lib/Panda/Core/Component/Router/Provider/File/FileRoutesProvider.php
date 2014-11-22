@@ -20,7 +20,7 @@ class FileRoutesProvider extends AbstractRoutesProvider
     public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {
-            $bundlesRoutesFiles = glob(APP_DIR . '*Bundle/res/config/routes.php');
+            $bundlesRoutesFiles = glob(BUNDLES_DIR . '*Bundle/res/config/routes.php');
 
             foreach ($bundlesRoutesFiles as $routesFile) {
                 $routesData = $this->routeFilesParser->parse($routesFile);
