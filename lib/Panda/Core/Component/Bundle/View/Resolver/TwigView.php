@@ -43,6 +43,8 @@ class TwigView implements View
             'auto_reload' => $this->devMode
         ));
 
+        $twig->addGlobal('webroot', WEB_ROOT);
+
         $result = $twig->render(basename($templateName), $vars);
 
         $this->logger->debug('Render "'.$templateName.'": done');

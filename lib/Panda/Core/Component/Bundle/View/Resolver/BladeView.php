@@ -28,6 +28,8 @@ class BladeView implements View
 
         $blade = new Blade(array($this->templatesDir, $this->viewsDir), $this->cacheDir);
 
+        $blade->view()->share('webroot', WEB_ROOT);
+
         $result = $blade->view()->make(basename($templateName, '.blade.php'), $vars);
 
         $this->logger->debug('Render "'.$templateName.'" with Blade engine');

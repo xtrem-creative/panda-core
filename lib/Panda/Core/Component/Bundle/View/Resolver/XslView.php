@@ -21,6 +21,7 @@ class XslView implements View
         $this->logger->debug('Render "'.$templateName.'" with XSLT engine');
 
         $xml = new DOMDocument();
+        $vars['webroot'] = WEB_ROOT;
         $xml->fromMixed($vars);
 
         $xsl = new DOMDocument();

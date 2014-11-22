@@ -7,5 +7,5 @@ define('VENDORS_DIR', ROOT . '../vendor/');
 
 require_once '../../vendor/autoload.php';
 
-$app = new Panda\Core\Application();
+$app = new Panda\Core\Application('dev');
 $app->run();
