@@ -9,9 +9,7 @@ use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Panda\Core\Component\Router\Route;
 use Panda\Core\Component\Debug\Debug;
-use Panda\Core\Event\Observable;
 use Panda\Core\Event\ObservableImpl;
-use Panda\Core\Event\Observer;
 use Panda\Core\Interceptor\HandlerInterceptor;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,7 +37,9 @@ class Application extends ObservableImpl implements \ArrayAccess
         define('APP_DIR', ROOT . 'app/');
         define('BUNDLES_DIR', APP_DIR . 'bundles/');
         define('RESOURCES_DIR', APP_DIR . 'resources/');
-        define('VENDORS_DIR', ROOT . 'vendor/');
+        if (!defined('VENDORS_DIR')) {
+            define('VENDORS_DIR', ROOT . 'vendor/');
+        }
 
         $this->startupTime = microtime(true);
         ConfigManager::setEnvironment($environment);
