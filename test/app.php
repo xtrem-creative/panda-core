@@ -2,7 +2,6 @@
 
 define('WEB_ROOT', str_replace('/app.php', '', $_SERVER['PHP_SELF']) . '/');
 define('APP_DIR', __DIR__ . '/app/');
-define('RESOURCES_DIR', APP_DIR . 'resources/');
 define('APP_NAMESPACE', 'PandaTest');
 
 require_once '../vendor/autoload.php';

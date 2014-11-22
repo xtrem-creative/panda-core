@@ -46,7 +46,7 @@ abstract class AbstractController implements Controller
                 $this->app['Symfony\Response']->prepare($this->app['Symfony\Request']);
                 $response->send();
             } else {
-                $this->view->render(APP_DIR . $this->bundleName . '/view/' . $viewName);
+                $this->view->render(BUNDLES_DIR . $this->bundleName . '/view/' . $viewName);
             }
         }
 

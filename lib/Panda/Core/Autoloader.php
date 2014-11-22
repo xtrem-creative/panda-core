@@ -20,7 +20,7 @@ class Autoloader
     public static function autoload($class)
     {
         if (0 === strpos($class, APP_NAMESPACE)) {
-            $filePath = APP_DIR . str_replace('\\', '/', str_replace(APP_NAMESPACE, '', $class));
+            $filePath = BUNDLES_DIR . str_replace('\\', '/', str_replace(APP_NAMESPACE, '', $class));
         } else {
             return;
         }

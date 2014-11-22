@@ -19,10 +19,10 @@ class AnnotationRoutesProvider extends AbstractRoutesProvider
     public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {
-            $bundleControllers = glob(APP_DIR . '*Bundle/*BundleController.php');
+            $bundleControllers = glob(BUNDLES_DIR . '*Bundle/*BundleController.php');
             foreach ($bundleControllers as $controller) {
                 $tags = $this->annotationParser->parse(str_replace('/', '\\', str_replace('.php', '',
-                    str_replace(APP_DIR, APP_NAMESPACE . '\\', $controller))));
+                    str_replace(BUNDLES_DIR, APP_NAMESPACE . '\\', $controller))));
 
                 foreach ($tags as $tag) {
                     if ($tag instanceof RequestMappingAnnotation) {
