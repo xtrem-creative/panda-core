@@ -4,7 +4,7 @@
         <layout class="LoggerLayoutPattern">
             <param name="conversionPattern" value="%date{H:i:s} [%p] [%logger] %message%newline%ex" />
         </layout>
-        <param name="file" value="./app/resources/log/panda-test-%s.log" />
+        <param name="file" value="../app/resources/log/panda-test-%s.log" />
         <param name="append" value="true" />
     </appender>
     <root>
