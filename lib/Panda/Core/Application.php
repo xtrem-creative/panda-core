@@ -38,7 +38,7 @@ class Application extends ObservableImpl implements \ArrayAccess
         //Define useful dirs shortcuts
         define('BUNDLES_DIR', APP_DIR . 'bundles/');
         define('RESOURCES_DIR', APP_DIR . 'resources/');
-        define('VENDORS_DIR', dirname(dirname(dirname(__DIR__))) . '/vendor/');
+        define('VENDORS_DIR', dirname(dirname(APP_DIR)) . '/vendor/');
 
         $this->startupTime = microtime(true);
         ConfigManager::setEnvironment($environment);
