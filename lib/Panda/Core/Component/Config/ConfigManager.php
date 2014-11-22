@@ -19,6 +19,11 @@ class ConfigManager
         self::$environment = $environment;
     }
 
+    public static function getEnvironment()
+    {
+        return self::$environment;
+    }
+
     /**
      * Set an entry in the config
      * @param $key
