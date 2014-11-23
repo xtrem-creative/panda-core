@@ -19,6 +19,10 @@ class FileRoutesProvider extends AbstractRoutesProvider
         $this->bundles = $bundles;
     }
 
+    /**
+     * Reload routes either from cache or from files
+     * @param bool $reloadCache
+     */
     public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {

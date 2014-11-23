@@ -193,14 +193,21 @@ class Application extends ObservableImpl implements \ArrayAccess
         $this->notify();
     }
 
+    /**
+     * Bind an interceptor to the current application
+     * @param HandlerInterceptor $interceptor
+     */
     public function bindInterceptor(HandlerInterceptor $interceptor)
     {
         if (in_array($interceptor, $this->interceptors)) {
-            throw new \RuntimeException('Already bind interceptor.');
+            throw new \RuntimeException('Already bound interceptor.');
         }
         $this->interceptors[] = $interceptor;
     }
 
+    /**
+     * Load a list of bundles from the configuration file
+     */
     private function loadBundles()
     {
         $this->logger->debug('Loading bundles.');
@@ -220,6 +227,9 @@ class Application extends ObservableImpl implements \ArrayAccess
         }
     }
 
+    /**
+     * Load Panda core dependencies
+     */
     private function loadDependencies()
     {
         Autoloader::register();
@@ -228,6 +238,9 @@ class Application extends ObservableImpl implements \ArrayAccess
         }
     }
 
+    /**
+     * Load additional services
+     */
     private function loadServices()
     {
         $this->logger->debug('Loading services.');
@@ -244,11 +257,15 @@ class Application extends ObservableImpl implements \ArrayAccess
                     Service interface.');
                 }
                 unset($config['className']);
+                $config['app'] = $this;
                 $this->services[$serviceName] = $reflectionClass->newInstanceArgs($config);
             }
         }
     }
 
+    /**
+     * Load app interceptors
+     */
     private function loadInterceptors()
     {
         $this->logger->debug('Loading interceptors.');
