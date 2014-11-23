@@ -13,17 +13,19 @@ abstract class AbstractController implements Controller
 {
 
     protected $app;
+    protected $namespace;
     protected $bundleName;
     protected $actionName;
     protected $view;
     protected $daos = array();
     protected $logger = null;
 
-    public function __construct(Application $app, $bundleName, $actionName)
+    public function __construct(Application $app, $namespace, $bundleName, $actionName)
     {
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Controller "'.$bundleName.'Controller" started.');
         $this->app = $app;
+        $this->namespace = $namespace;
         $this->bundleName = $bundleName;
         $this->actionName = $actionName;
         $this->view = new ViewFacade($app->getComponent('Symfony\Response'));
@@ -46,7 +48,8 @@ abstract class AbstractController implements Controller
                 $this->app['Symfony\Response']->prepare($this->app['Symfony\Request']);
                 $response->send();
             } else {
-                $this->view->render(BUNDLES_DIR . $this->bundleName . '/view/' . $viewName);
+                $reflClass = new ReflectionClass($this);
+                $this->view->render(dirname($reflClass->getFileName()) . '/view/' . $viewName);
             }
         }
 
@@ -57,12 +60,12 @@ abstract class AbstractController implements Controller
     {
         if (!array_key_exists($daoName, $this->daos)) {
             if ($bundleName === null) {
-                $daoClass = APP_NAMESPACE . '\\' . $this->bundleName . '\\' . $daoName . 'Dao';
+                $daoClass = $this->namespace . '\\dao\\' . $daoName . 'Dao';
             } else {
                 if (!is_file(APP_DIR . $bundleName . '/' . $daoName . 'Dao.class.php')) {
                     throw new \InvalidArgumentException('Unknown Dao "'.$daoName.'"');
                 }
-                $daoClass = APP_NAMESPACE . '\\' . $bundleName . '\\' . $daoName . 'Dao';
+                $daoClass = $this->namespace . '\\dao\\' . $daoName . 'Dao';
             }
             $this->daos[$daoName] = new $daoClass();
         }

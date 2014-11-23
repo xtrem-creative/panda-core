@@ -1,6 +1,6 @@
 <?php
 
-namespace PandaTest\ExampleBundle;
+namespace PandaTest\ExampleBundle\dao;
 
 use Panda\Core\Component\Bundle\Dao\AbstractBasicDao;
 

@@ -8,6 +8,7 @@ use Panda\Core\Component\Router\Route;
 abstract class AbstractRoutesProvider implements RoutesProvider
 {
     protected $routes = array();
+    protected $bundles = array();
 
     public function getRoutesList()
     {
@@ -36,8 +37,8 @@ abstract class AbstractRoutesProvider implements RoutesProvider
         file_put_contents(RESOURCES_DIR . 'cache/router/routes.cache', serialize($this->routes));
     }
 
-    protected function addRoute($pattern, $bundle, $action, $httpMethod, $vars)
+    protected function addRoute($pattern, $namespace, $controller, $action, $httpMethod, $vars)
     {
-        $this->routes[] = new Route($pattern, $bundle, $action, $httpMethod, $vars);
+        $this->routes[] = new Route($pattern, $namespace, $controller, $action, $httpMethod, $vars);
     }
 } 

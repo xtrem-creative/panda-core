@@ -18,20 +18,20 @@ class Router extends ObservableImpl
 {
     private $routesProvider;
 
-    public function __construct()
+    public function __construct(array $bundles)
     {
         if (ConfigManager::exists('router.provider')) {
             $providerName = ConfigManager::get('router.provider');
 
             if ($providerName === 'Annotation') {
-                $this->setRoutesProvider(new AnnotationRoutesProvider());
+                $this->setRoutesProvider(new AnnotationRoutesProvider($bundles));
             } else if ($providerName === 'File') {
-                $this->setRoutesProvider(new FileRoutesProvider());
+                $this->setRoutesProvider(new FileRoutesProvider($bundles));
             } else {
                 throw new \InvalidArgumentException('Invalid routes provider "'.$providerName.'"');
             }
         } else {
-            $this->setRoutesProvider(new FileRoutesProvider());
+            $this->setRoutesProvider(new FileRoutesProvider($bundles));
         }
     }
 

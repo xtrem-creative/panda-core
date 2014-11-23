@@ -1,4 +1,7 @@
 {
+    "bundles": [
+        "PandaTest\\ExampleBundle"
+    ],
     "datasources": {
         "default": "test",
         "list": {

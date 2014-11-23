@@ -8,26 +8,30 @@ class FileRoutesProvider extends AbstractRoutesProvider
 {
     private $routeFilesParser;
 
-    public function __construct()
+    public function __construct(array $bundles)
     {
         $this->routeFilesParser = new RouteFilesParser();
 
         //Load basic attributes knowledge
         $this->routeFilesParser->addKnownAttribute
         ('Panda\Core\Component\Router\Provider\File\Attribute\ActionAttribute', 'action');
+
+        $this->bundles = $bundles;
     }
 
     public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {
-            $bundlesRoutesFiles = glob(BUNDLES_DIR . '*Bundle/res/config/routes.php');
 
-            foreach ($bundlesRoutesFiles as $routesFile) {
+            foreach ($this->bundles as $bundle => $controller) {
+                $reflectionClass = new \ReflectionClass($controller);
+                $routesFile = dirname($reflectionClass->getFileName()) . 'res/config/routes.php';
                 $routesData = $this->routeFilesParser->parse($routesFile);
 
                 foreach ($routesData as $route) {
                     $this->addRoute(
                         $route['urlPattern']->getValue(),
+                        $reflectionClass->getNamespaceName(),
                         $route['bundle']->getName(),
                         $route['action']->getName() . 'Action',
                         array_key_exists('method', $route) ? $route['method']->getValue() : array('GET', 'POST'),

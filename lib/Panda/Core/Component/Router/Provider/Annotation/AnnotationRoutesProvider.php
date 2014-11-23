@@ -9,25 +9,24 @@ class AnnotationRoutesProvider extends AbstractRoutesProvider
 {
     private $annotationParser;
 
-    public function __construct()
+    public function __construct(array $bundles)
     {
         $this->annotationParser = new AnnotationParserImpl();
         $this->addAvailableAnnotation('Panda\Core\Component\Router\Provider\Annotation\RequestMappingAnnotation',
             'RequestMapping');
+        $this->bundles = $bundles;
     }
 
     public function reloadRoutes($reloadCache = false)
     {
         if ($reloadCache || empty($this->routes)) {
-            $bundleControllers = glob(BUNDLES_DIR . '*Bundle/*BundleController.php');
-            foreach ($bundleControllers as $controller) {
-                $tags = $this->annotationParser->parse(str_replace('/', '\\', str_replace('.php', '',
-                    str_replace(BUNDLES_DIR, APP_NAMESPACE . '\\', $controller))));
+            foreach ($this->bundles as $bundle => $controller) {
+                $tags = $this->annotationParser->parse($controller->getName());
 
                 foreach ($tags as $tag) {
                     if ($tag instanceof RequestMappingAnnotation) {
-                        $this->addRoute($tag->getValue(), $tag->getBundle(), $tag->getAction(), $tag->getMethod(),
-                            $tag->getVars());
+                        $this->addRoute($tag->getValue(), $tag->getNamespace(), $tag->getBundleName(),
+                            $tag->getAction(), $tag->getMethod(), $tag->getVars());
                     }
                 }
             }

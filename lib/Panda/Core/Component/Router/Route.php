@@ -9,14 +9,16 @@ namespace Panda\Core\Component\Router;
 class Route
 {
     private $urlPattern;
+    private $namespace;
     private $bundleName;
     private $actionName;
     private $httpMethod;
     private $vars;
 
-    public function __construct($urlPattern, $bundleName, $actionName, $httpMethod, $vars)
+    public function __construct($urlPattern, $namespace, $bundleName, $actionName, $httpMethod, $vars)
     {
         $this->setUrlPattern($urlPattern);
+        $this->setNamespace($namespace);
         $this->setBundleName($bundleName);
         $this->setActionName($actionName);
         $this->setHttpMethod($httpMethod);
@@ -93,18 +95,35 @@ class Route
     /**
      * @return string
      */
+    public function getNamespace()
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @param string $namespace
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = $namespace;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getBundleName()
     {
         return $this->bundleName;
     }
 
     /**
-     * @param string $bundleName
+     * @param mixed $bundleName
      */
     public function setBundleName($bundleName)
     {
         $this->bundleName = $bundleName;
     }
+
 
     /**
      * @return string

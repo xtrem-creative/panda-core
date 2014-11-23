@@ -9,6 +9,7 @@ use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteMethodException;
 use Panda\Core\Component\Router\Route;
 use Panda\Core\Component\Debug\Debug;
+use Panda\Core\Component\Router\Router;
 use Panda\Core\Event\ObservableImpl;
 use Panda\Core\Interceptor\HandlerInterceptor;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,8 +22,10 @@ use Symfony\Component\HttpFoundation\Response;
 class Application extends ObservableImpl implements \ArrayAccess
 {
     private $dependencies = array(
-        'Tool/Function/String.php'
+        'Tool/Function/String.php',
+        'Tool/Function/Math.php'
     );
+    private $loadedBundles = array();
     private $environment;
     private $interceptors = array();
     private $services = array();
@@ -35,7 +38,6 @@ class Application extends ObservableImpl implements \ArrayAccess
     {
         //Define useful dirs shortcuts
         define('APP_DIR', ROOT . 'app/');
-        define('BUNDLES_DIR', APP_DIR . 'bundles/');
         define('RESOURCES_DIR', APP_DIR . 'resources/');
         if (!defined('VENDORS_DIR')) {
             define('VENDORS_DIR', ROOT . 'vendor/');
@@ -49,6 +51,7 @@ class Application extends ObservableImpl implements \ArrayAccess
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Panda framework started.');
         $this->setEnvironment($environment);
+        $this->loadBundles();
         $this->loadServices();
         $this->loadInterceptors();
     }
@@ -58,7 +61,8 @@ class Application extends ObservableImpl implements \ArrayAccess
      */
     public function run()
     {
-        $router = $this->getComponent('Router\Router');
+        $router = new Router($this->loadedBundles);
+        $this->components['Router\Router'] = $router;
         $this->components['Symfony\Request'] = Request::createFromGlobals();
         $this->components['Symfony\Response'] = Response::create();
 
@@ -125,7 +129,8 @@ class Application extends ObservableImpl implements \ArrayAccess
         }
 
         $execTime = microtime(true) - $this->startupTime;
-        $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$execTime.' s.');
+        $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$execTime.' s ('
+            .convert_bytes(memory_get_peak_usage(true)).').');
         $this->components['Symfony\Response']->prepare($this->components['Symfony\Request']);
         $this->components['Symfony\Response']->send();
         exit;
@@ -142,10 +147,10 @@ class Application extends ObservableImpl implements \ArrayAccess
 
     public function getController(Route $route)
     {
-        $controllerClass = APP_NAMESPACE . '\\' . $route->getBundleName() . '\\' . $route->getBundleName() .
+        $controllerClass = $route->getNamespace() . '\\' . $route->getBundleName() .
             'Controller';
 
-        return new $controllerClass($this, $route->getBundleName(), $route->getActionName());
+        return new $controllerClass($this, $route->getNamespace(), $route->getBundleName(), $route->getActionName());
     }
 
     /**
@@ -194,6 +199,25 @@ class Application extends ObservableImpl implements \ArrayAccess
             throw new \RuntimeException('Already bind interceptor.');
         }
         $this->interceptors[] = $interceptor;
+    }
+
+    private function loadBundles()
+    {
+        $this->logger->debug('Loading bundles.');
+
+        if (!ConfigManager::exists('bundles')) {
+            throw new \RuntimeException('No bundle to load.');
+        }
+
+        $bundles = ConfigManager::get('bundles');
+
+        foreach ($bundles as $bundle) {
+            $bundleName = substr($bundle, strrpos($bundle, '\\') + 1);
+            if (!class_exists($bundle . '\\'.$bundleName.'Controller')) {
+                throw new \RuntimeException('Unable to find a controller in "' . $bundleName . '"');
+            }
+            $this->loadedBundles[$bundle] = new \ReflectionClass($bundle . '\\'.$bundleName.'Controller');
+        }
     }
 
     private function loadDependencies()
