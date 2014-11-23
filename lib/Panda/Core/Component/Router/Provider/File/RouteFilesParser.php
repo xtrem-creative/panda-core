@@ -33,7 +33,8 @@ class RouteFilesParser
     public function parse($routesFile)
     {
         $routesRaw = require_once $routesFile;
-        $bundleName = str_replace('/res/config/routes.php', '', str_replace(BUNDLES_DIR, '', $routesFile));
+        $rawBundleName = str_replace('/res/config/routes.php', '', $routesFile);
+        $bundleName = substr($rawBundleName, strrpos($rawBundleName, '/') + 1);
 
         foreach ($routesRaw as $route => $config) {
             if (array_key_exists($route, $this->routes)) {

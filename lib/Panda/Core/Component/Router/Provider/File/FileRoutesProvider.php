@@ -24,14 +24,13 @@ class FileRoutesProvider extends AbstractRoutesProvider
         if ($reloadCache || empty($this->routes)) {
 
             foreach ($this->bundles as $bundle => $controller) {
-                $reflectionClass = new \ReflectionClass($controller);
-                $routesFile = dirname($reflectionClass->getFileName()) . 'res/config/routes.php';
+                $routesFile = dirname($controller->getFileName()) . '/res/config/routes.php';
                 $routesData = $this->routeFilesParser->parse($routesFile);
 
                 foreach ($routesData as $route) {
                     $this->addRoute(
                         $route['urlPattern']->getValue(),
-                        $reflectionClass->getNamespaceName(),
+                        $controller->getNamespaceName(),
                         $route['bundle']->getName(),
                         $route['action']->getName() . 'Action',
                         array_key_exists('method', $route) ? $route['method']->getValue() : array('GET', 'POST'),
