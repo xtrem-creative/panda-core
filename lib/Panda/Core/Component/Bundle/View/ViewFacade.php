@@ -15,6 +15,7 @@ class ViewFacade implements View
 {
     protected $response;
     protected $vars = array();
+    protected $viewPath;
 
     public function __construct(Response $response)
     {
@@ -65,6 +66,22 @@ class ViewFacade implements View
         throw new InvalidArgumentException('Unknown template var "' . (string) $name . '"');
     }
 
+    /**
+     * @return mixed
+     */
+    public function getViewPath()
+    {
+        return $this->viewPath;
+    }
+
+    /**
+     * @param mixed $viewPath
+     */
+    public function setViewPath($viewPath)
+    {
+        $this->viewPath = $viewPath;
+    }
+
     public function render($templateName = null, $vars = null)
     {
         if ($templateName === null && ($this->getHttpCode() < 200 || $this->getHttpCode() > 226)) {
@@ -81,6 +98,9 @@ class ViewFacade implements View
             $this->vars = array(
                 'errorCode' => $this->getHttpCode()
             );
+        }
+        if ($templateName === null && $this->viewPath !== null) {
+            $templateName = $this->viewPath;
         }
         if (is_file($templateName)) {
             $bundleViewsDir = substr($templateName, 0, strrpos($templateName, '/'));

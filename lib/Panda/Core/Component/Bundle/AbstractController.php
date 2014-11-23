@@ -49,7 +49,7 @@ abstract class AbstractController implements Controller
                 $response->send();
             } else {
                 $reflClass = new ReflectionClass($this);
-                $this->view->render(dirname($reflClass->getFileName()) . '/view/' . $viewName);
+                $this->view->setViewPath(dirname($reflClass->getFileName()) . '/view/' . $viewName);
             }
         }
 

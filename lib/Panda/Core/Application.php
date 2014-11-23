@@ -121,6 +121,8 @@ class Application extends ObservableImpl implements \ArrayAccess
             $this->logger->info('Config saved".');
         }
 
+        $view->render();
+
         foreach ($this->interceptors as $interceptor) {
             if (!$interceptor->afterCompletition($this['Symfony\Request'], $this->components['Symfony\Response'])) {
                 $this->logger->debug('Interceptor afterCompletition() interrupts normal process.');
