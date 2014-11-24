@@ -259,7 +259,7 @@ class Application extends ObservableImpl implements \ArrayAccess
                     Service interface.');
                 }
                 unset($config['className']);
-                $config['app'] = $this;
+                $config = array('app' => $this) + $config;
                 $this->services[$serviceName] = $reflectionClass->newInstanceArgs($config);
             }
         }
