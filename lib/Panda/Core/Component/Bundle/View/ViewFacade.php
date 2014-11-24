@@ -95,9 +95,17 @@ class ViewFacade implements View
                 //Render error default page
                 $templateName = __DIR__ . '/Resource/default_error.php';
             }
-            $this->vars = array(
-                'errorCode' => $this->getHttpCode()
-            );
+
+            if (array_key_exists('message', $this->vars)) {
+                $this->vars = array(
+                    'errorCode' => $this->getHttpCode(),
+                    'message' => $this->vars['message']
+                );
+            } else {
+                $this->vars = array(
+                    'errorCode' => $this->getHttpCode()
+                );
+            }
         }
         if ($templateName === null && $this->viewPath !== null) {
             $templateName = $this->viewPath;

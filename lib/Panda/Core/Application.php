@@ -71,9 +71,10 @@ class Application extends ObservableImpl implements \ArrayAccess
                 $this['Symfony\Request']->getRequestUri()));
         } catch (NoMatchingRouteException $e) {
             //No matching route -> 404 Not Found
-            $this->exitFailure(404);
+            $this->exitFailure(404, 'Ressource Not Found.');
         } catch (NoMatchingRouteMethodException $e) {
-            $this->exitFailure(405);
+            $this->exitFailure(405, 'Method "'.$this->components['Symfony\Request']->getMethod().'" is not allowed
+            with this route.');
         }
 
         //Notify interceptors
@@ -101,12 +102,14 @@ class Application extends ObservableImpl implements \ArrayAccess
         }
     }
 
-    public function exitFailure($httpCode)
+    public function exitFailure($httpCode, $message = null)
     {
         $this->logger->debug('Exit failure with HTTP code "'.$httpCode.'".');
         $view = new ViewFacade($this->components['Symfony\Response']);
         $view->setHttpCode($httpCode);
-
+        if ($message != null) {
+            $view->setVar('message', $message);
+        }
         $view->render();
 
         $this->components['Symfony\Response']->prepare($this->components['Symfony\Request']);

@@ -6,7 +6,11 @@
     </head>
     <body>
         <h1><?php echo $v_errorCode; ?></h1>
-        <p>An error occured</p>
+        <?php if (isset($v_message)) : ?>
+            <p><?php echo $v_message; ?></p>
+        <?php else : ?>
+            <p>An error occured</p>
+        <?php endif; ?>
         <hr />
         <address>Powered by Panda Framework</address>
     </body>
