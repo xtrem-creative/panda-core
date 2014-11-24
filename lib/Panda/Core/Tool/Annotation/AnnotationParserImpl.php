@@ -7,6 +7,12 @@ use ReflectionClass;
 
 class AnnotationParserImpl implements AnnotationParser
 {
+    private static $phpdoc_tags = array(
+        'package',
+        'author',
+        'param',
+        'return'
+    );
     private $knownTags = array();
     private $logger = null;
 
@@ -44,7 +50,7 @@ class AnnotationParserImpl implements AnnotationParser
                 if (array_key_exists($tagName, $this->knownTags)) {
                     $reflection = new ReflectionClass($this->knownTags[$tagName]);
                     $tagsList[] = $reflection->newInstanceArgs($params);
-                } else {
+                } else if (!in_array($tagName, self::$phpdoc_tags)) {
                     $this->logger->info('Unkown annotation "'.$tagName.'" for class "'.$class.'"');
                 }
             }
