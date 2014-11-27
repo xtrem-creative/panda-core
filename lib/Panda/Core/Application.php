@@ -110,7 +110,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     public function exitFailure($httpCode, $message = null)
     {
         $this->logger->debug('Exit failure with HTTP code "'.$httpCode.'".');
-        $view = new ViewFacade($this->components['Symfony\Response']);
+        $view = new ViewFacade($this->components['Symfony\Request'], $this->components['Symfony\Response']);
         $view->setHttpCode($httpCode);
         if ($message != null) {
             $view->setVar('message', $message);
