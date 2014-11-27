@@ -9,19 +9,22 @@ use Panda\Core\Component\Bundle\View\Resolver\PhpView;
 use Panda\Core\Component\Bundle\View\Resolver\TwigView;
 use Panda\Core\Component\Bundle\View\Resolver\XslView;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ViewFacade implements View
 {
+    protected $request;
     protected $response;
     protected $vars = array();
     protected $viewPath;
 
-    public function __construct(Response $response)
+    public function __construct(Request $request, Response $response)
     {
         if (!file_exists(RESOURCES_DIR . 'cache/view')) {
             mkdir(RESOURCES_DIR . 'cache/view');
         }
+        $this->request = $request;
         $this->response = $response;
     }
 
@@ -82,6 +85,14 @@ class ViewFacade implements View
         $this->viewPath = $viewPath;
     }
 
+    /**
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
     public function render($templateName = null, $vars = null)
     {
         if ($templateName === null && ($this->getHttpCode() < 200 || $this->getHttpCode() > 226)) {
@@ -120,7 +131,7 @@ class ViewFacade implements View
                 if (class_exists('Twig_Loader_Filesystem') && class_exists('Twig_Environment') && class_exists
                     ('Twig_SimpleFilter')
                 ) {
-                    $tplEngine = new TwigView(RESOURCES_DIR . 'template/', $bundleViewsDir,
+                    $tplEngine = new TwigView($this, RESOURCES_DIR . 'template/', $bundleViewsDir,
                         RESOURCES_DIR . 'cache/view/');
                 } else {
                     throw new MissingTemplateEngineException('The Twig template engine is missing :/ Please add the
@@ -132,7 +143,7 @@ class ViewFacade implements View
                  * @link http://laravel.com/docs/4.2/templates
                  */
                 if (class_exists('Philo\Blade\Blade')) {
-                    $tplEngine = new BladeView(RESOURCES_DIR . 'template/', $bundleViewsDir,
+                    $tplEngine = new BladeView($this, RESOURCES_DIR . 'template/', $bundleViewsDir,
                         RESOURCES_DIR . 'cache/view/');
                 } else {
                     throw new MissingTemplateEngineException('The Blade template engine is missing :/ Please add the
@@ -142,12 +153,12 @@ class ViewFacade implements View
                 /**
                  * Use raw php for templates
                  */
-                $tplEngine = new PhpView();
+                $tplEngine = new PhpView($this);
             }  else if (str_ends_with($templateName, '.xsl')) {
                 /**
                  * Use XSLT processor for templates
                  */
-                $tplEngine = new XslView();
+                $tplEngine = new XslView($this);
             } else {
                 throw new InvalidArgumentException('No template engine found for "' . (string)$templateName . '"');
             }

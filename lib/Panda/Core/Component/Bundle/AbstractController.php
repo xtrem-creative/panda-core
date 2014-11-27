@@ -28,7 +28,7 @@ abstract class AbstractController implements Controller
         $this->namespace = $namespace;
         $this->bundleName = $bundleName;
         $this->actionName = $actionName;
-        $this->view = new ViewFacade($app->getComponent('Symfony\Response'));
+        $this->view = new ViewFacade($app->getComponent('Symfony\Request'), $app->getComponent('Symfony\Response'));
     }
 
     public function exec()

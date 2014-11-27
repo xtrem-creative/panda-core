@@ -5,7 +5,7 @@ namespace Panda\Core\Component\Bundle\View\Resolver;
 use Logger;
 use Panda\Core\Component\Bundle\View\View;
 
-class PhpView implements View
+class PhpView extends AbstractViewResolver
 {
     private $logger;
 
@@ -14,6 +14,7 @@ class PhpView implements View
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Render "'.$templateName.'" with raw PHP engine');
         $vars['webroot'] = WEB_ROOT;
+        $vars['currentUrl'] = $this->viewFacade->getRequest()->getRequestUri();
 
         ob_start();
         extract($vars, EXTR_PREFIX_ALL, 'v');

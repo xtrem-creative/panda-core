@@ -6,14 +6,9 @@ use Logger;
 use Panda\Core\Component\Bundle\View\View;
 use Panda\Core\Tool\Xml\DOMDocument;
 
-class XslView implements View
+class XslView extends AbstractViewResolver
 {
     private $logger;
-
-    public function __construct()
-    {
-
-    }
 
     public function render($templateName, $vars = null)
     {
@@ -22,6 +17,7 @@ class XslView implements View
 
         $xml = new DOMDocument();
         $vars['webroot'] = WEB_ROOT;
+        $vars['currentUrl'] = $this->viewFacade->getRequest()->getRequestUri();
         $xml->fromMixed($vars);
 
         $xsl = new DOMDocument();

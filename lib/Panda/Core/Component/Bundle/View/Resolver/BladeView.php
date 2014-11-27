@@ -8,15 +8,16 @@ use Panda\Core\Component\Bundle\View\Exception\ResourceNotWritableException;
 use Panda\Core\Component\Bundle\View\View;
 use Philo\Blade\Blade;
 
-class BladeView implements View
+class BladeView extends AbstractViewResolver
 {
     private $logger;
     protected $templatesDir = null;
     protected $viewsDir = null;
     protected $cacheDir = null;
 
-    public function __construct($templatesDir, $viewsDir, $cacheDir)
+    public function __construct($viewFacade, $templatesDir, $viewsDir, $cacheDir)
     {
+        parent::__construct($viewFacade);
         $this->setTemplatesDir($templatesDir);
         $this->setViewsDir($viewsDir);
         $this->setCacheDir($cacheDir);
@@ -29,6 +30,7 @@ class BladeView implements View
         $blade = new Blade(array($this->templatesDir, $this->viewsDir), $this->cacheDir);
 
         $blade->view()->share('webroot', WEB_ROOT);
+        $blade->view()->share('currentUrl', $this->viewFacade->getRequest()->getRequestUri());
 
         $result = $blade->view()->make(basename($templateName, '.blade.php'), $vars);
 

@@ -6,10 +6,11 @@ use Logger;
 use Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException;
 use Panda\Core\Component\Bundle\View\Exception\ResourceNotWritableException;
 use Panda\Core\Component\Bundle\View\View;
+use Panda\Core\Component\Bundle\View\ViewFacade;
 use Twig_Environment;
 use Twig_Loader_Filesystem;
 
-class TwigView implements View
+class TwigView extends AbstractViewResolver
 {
     protected $logger = null;
     protected $templatesDir = null;
@@ -17,8 +18,9 @@ class TwigView implements View
     protected $cacheDir = null;
     protected $devMode = true;
 
-    public function __construct($templatesDir, $viewsDir, $cacheDir, $devMode = true)
+    public function __construct(ViewFacade $viewFacade, $templatesDir, $viewsDir, $cacheDir, $devMode = true)
     {
+        parent::__construct($viewFacade);
         $this->setTemplatesDir($templatesDir);
         $this->setViewsDir($viewsDir);
         $this->setCacheDir($cacheDir);
@@ -44,6 +46,7 @@ class TwigView implements View
         ));
 
         $twig->addGlobal('webroot', WEB_ROOT);
+        $twig->addGlobal('currentUrl', $this->viewFacade->getRequest()->getRequestUri());
 
         $result = $twig->render(basename($templateName), $vars);
 
