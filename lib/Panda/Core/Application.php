@@ -3,6 +3,7 @@
 namespace Panda\Core;
 
 use Logger;
+use Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException;
 use Panda\Core\Component\Bundle\View\ViewFacade;
 use Panda\Core\Component\Config\ConfigManager;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
@@ -85,7 +86,11 @@ class Application extends ObservableImpl implements \ArrayAccess
             }
         }
 
-        $view = $this->getController($this->route)->exec();
+        try {
+            $view = $this->getController($this->route)->exec();
+        } catch (ResourceNotFoundException $e) {
+            $this->exitFailure(404, $e->getMessage());
+        }
 
         //Notify interceptors
         foreach ($this->interceptors as $interceptor) {
