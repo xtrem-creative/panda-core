@@ -43,11 +43,11 @@ class Route
                     $matchesCount = count($matches);
 
                     $vars = array();
-                    $i = 0;
 
-                    foreach ($this->vars as $varValue) {
+                    for ($i = 0 ; $i < count($this->vars) ; ++$i) {
                         if ($i < $matchesCount) {
-                            $vars[$this->vars[$i]['name']] = $varValue;
+                            $vars[$this->vars[$i]['name']] = $matches[$i];
+                            var_dump($vars);
                         } else {
                             if ($_SERVER['REQUEST_METHOD'] === 'POST' && array_key_exists($this->vars[$i]['name'],
                                     $_POST)) {
@@ -172,4 +172,4 @@ class Route
     {
         $this->vars = $vars;
     }
-} 
+}
