@@ -46,7 +46,7 @@ class TwigView extends AbstractViewResolver
         ));
 
         $twig->addGlobal('webroot', WEB_ROOT);
-        $twig->addGlobal('currentUrl', $this->viewFacade->getRequest()->getRequestUri());
+        $twig->addGlobal('currentUrl', str_replace(WEB_ROOT, '/', $this->viewFacade->getRequest()->getRequestUri()));
 
         $result = $twig->render(basename($templateName), $vars);
 

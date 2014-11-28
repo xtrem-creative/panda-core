@@ -30,7 +30,7 @@ class BladeView extends AbstractViewResolver
         $blade = new Blade(array($this->templatesDir, $this->viewsDir), $this->cacheDir);
 
         $blade->view()->share('webroot', WEB_ROOT);
-        $blade->view()->share('currentUrl', $this->viewFacade->getRequest()->getRequestUri());
+        $blade->view()->share('currentUrl', str_replace(WEB_ROOT, '/', $this->viewFacade->getRequest()->getRequestUri()));
 
         $result = $blade->view()->make(basename($templateName, '.blade.php'), $vars);
 

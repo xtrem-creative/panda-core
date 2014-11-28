@@ -14,7 +14,7 @@ class PhpView extends AbstractViewResolver
         $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Render "'.$templateName.'" with raw PHP engine');
         $vars['webroot'] = WEB_ROOT;
-        $vars['currentUrl'] = $this->viewFacade->getRequest()->getRequestUri();
+        $vars['currentUrl'] = str_replace(WEB_ROOT, '/', $this->viewFacade->getRequest()->getRequestUri());
 
         ob_start();
         extract($vars, EXTR_PREFIX_ALL, 'v');

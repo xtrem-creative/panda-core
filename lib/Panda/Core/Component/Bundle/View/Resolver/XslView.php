@@ -17,7 +17,7 @@ class XslView extends AbstractViewResolver
 
         $xml = new DOMDocument();
         $vars['webroot'] = WEB_ROOT;
-        $vars['currentUrl'] = $this->viewFacade->getRequest()->getRequestUri();
+        $vars['currentUrl'] = str_replace(WEB_ROOT, '/', $this->viewFacade->getRequest()->getRequestUri());
         $xml->fromMixed($vars);
 
         $xsl = new DOMDocument();
