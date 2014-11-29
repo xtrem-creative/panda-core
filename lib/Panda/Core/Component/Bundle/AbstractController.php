@@ -46,8 +46,7 @@ abstract class AbstractController implements Controller
             if (str_starts_with($viewName, 'redirect:')) {
                 $dest = substr($viewName, strlen('redirect:'));
                 if ($dest[0] = '/') {
-                    unset($dest[0]);
-                    $dest = WEB_ROOT . $dest;
+                    $dest = WEB_ROOT . substr($dest, 1);
                 }
                 $response = new RedirectResponse($dest);
                 $this->app['Symfony\Response']->prepare($this->app['Symfony\Request']);
