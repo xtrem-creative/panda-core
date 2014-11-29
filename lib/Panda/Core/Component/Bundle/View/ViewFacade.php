@@ -118,8 +118,12 @@ class ViewFacade implements View
                 );
             }
         }
-        if ($templateName === null && $this->viewPath !== null) {
-            $templateName = $this->viewPath;
+        if ($templateName === null) {
+            if ($this->viewPath !== null) {
+                $templateName = $this->viewPath;
+            } else {
+                return;
+            }
         }
         if (is_file($templateName)) {
             $bundleViewsDir = substr($templateName, 0, strrpos($templateName, '/'));
