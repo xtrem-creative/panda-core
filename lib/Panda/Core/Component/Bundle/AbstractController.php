@@ -5,30 +5,31 @@ namespace Panda\Core\Component\Bundle;
 use Logger;
 use Panda\Core\Application;
 use Panda\Core\Component\Bundle\View\ViewFacade;
+use Panda\Core\Event\ObservableImpl;
+use Panda\Core\Loggable;
 use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
-abstract class AbstractController implements Controller
+abstract class AbstractController extends ObservableImpl implements Controller
 {
-
     protected $app;
     protected $namespace;
     protected $bundleName;
     protected $actionName;
     protected $view;
     protected $daos = array();
-    protected $logger = null;
 
     public function __construct(Application $app, $namespace, $bundleName, $actionName)
     {
-        $this->logger = Logger::getLogger(__CLASS__);
+        $this->init(__CLASS__);
         $this->logger->debug('Controller "'.$bundleName.'Controller" started.');
         $this->app = $app;
         $this->namespace = $namespace;
         $this->bundleName = $bundleName;
         $this->actionName = $actionName;
         $this->view = new ViewFacade($app->getComponent('Symfony\Request'), $app->getComponent('Symfony\Response'));
+        $this->notify();
     }
 
     public function exec()

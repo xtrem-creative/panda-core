@@ -3,9 +3,10 @@
 namespace Panda\Core\Event;
 
 
+use Panda\Core\Loggable;
 use SplObserver;
 
-class ObservableImpl implements \SplSubject
+class ObservableImpl extends Loggable implements \SplSubject
 {
     private $observers = array();
 

@@ -12,6 +12,15 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Class ViewFacade
+ *
+ * A common interface to manage the view and its contents. This facade is able to handle php, twig, xsl and blade views:
+ * the proper view is called given the view file extension (respectively .php, .twig, .xsl and .blade.php).
+ *
+ * @package Panda\Core\Component\Bundle\View
+ * @author Stanislas Michalak <stanislas.michalak@gmail.com>
+ */
 class ViewFacade implements View
 {
     protected $request;
@@ -28,26 +37,56 @@ class ViewFacade implements View
         $this->response = $response;
     }
 
+    /**
+     * Get current request
+     * @return Request
+     */
+    public function getRequest()
+    {
+        return $this->request;
+    }
+
+    /**
+     * Get current HTTP code
+     * @return int
+     */
     public function getHttpCode()
     {
         return $this->response->getStatusCode();
     }
 
+    /**
+     * Set current HTTP code
+     * @param $httpCode
+     */
     public function setHttpCode($httpCode)
     {
         $this->response->setStatusCode($httpCode);
     }
 
+    /**
+     * Get current Content Type
+     * @return array|string
+     */
     public function getContentType()
     {
         return $this->response->headers->get('Content-Type');
     }
 
+    /**
+     * Set current Content Type
+     * @param $contentType
+     */
     public function setContentType($contentType)
     {
         $this->response->headers->set('Content-Type', $contentType);
     }
 
+    /**
+     * Bind a var to the view
+     * @param $name
+     * @param $value
+     */
     public function setVar($name, $value)
     {
         if (is_string($name) && !empty($name)) {
@@ -61,6 +100,11 @@ class ViewFacade implements View
         }
     }
 
+    /**
+     * Get a var value given its name
+     * @param $name
+     * @return mixed
+     */
     public function getVar($name)
     {
         if (array_key_exists($name, $this->vars)) {
@@ -70,6 +114,17 @@ class ViewFacade implements View
     }
 
     /**
+     * Check whether a var exists given its name
+     * @param $name
+     * @return bool
+     */
+    public function hasVar($name)
+    {
+        return array_key_exists($name, $this->vars);
+    }
+
+    /**
+     * Get currently bound view path
      * @return mixed
      */
     public function getViewPath()
@@ -78,6 +133,7 @@ class ViewFacade implements View
     }
 
     /**
+     * Bind current view path
      * @param mixed $viewPath
      */
     public function setViewPath($viewPath)
@@ -86,13 +142,10 @@ class ViewFacade implements View
     }
 
     /**
-     * @return Request
+     * Render currently bound view and set result in response
+     * @param string|null $templateName
+     * @param array|null $vars
      */
-    public function getRequest()
-    {
-        return $this->request;
-    }
-
     public function render($templateName = null, $vars = null)
     {
         if ($templateName === null && ($this->getHttpCode() < 200 || $this->getHttpCode() > 226)) {
@@ -171,13 +224,5 @@ class ViewFacade implements View
         } else {
             throw new InvalidArgumentException('"' . (string)$templateName . '" template doesn\'t exists');
         }
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRenderedContent()
-    {
-        return $this->renderedContent;
     }
 } 

@@ -14,6 +14,14 @@ class AnnotationRoutesProvider extends AbstractRoutesProvider
         $this->annotationParser = new AnnotationParserImpl();
         $this->addAvailableAnnotation('Panda\Core\Component\Router\Provider\Annotation\RequestMappingAnnotation',
             'RequestMapping');
+        $this->annotationParser->setIgnoredTags(array(
+            'author',
+            'see',
+            'link',
+            'param',
+            'throws',
+            'return'
+        ));
         $this->bundles = $bundles;
     }
 

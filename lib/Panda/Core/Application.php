@@ -31,9 +31,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     private $interceptors = array();
     private $services = array();
     private $components = array();
-    private $logger = null;
     private $route;
-    private $startupTime;
 
     public function __construct($environment = 'prod')
     {
@@ -44,17 +42,19 @@ class Application extends ObservableImpl implements \ArrayAccess
             define('VENDORS_DIR', ROOT . 'vendor/');
         }
 
-        $this->startupTime = microtime(true);
+        Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
+        $this->init(__CLASS__);
+
         ConfigManager::setEnvironment($environment);
         Debug::register($this);
         $this->loadDependencies();
-        Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
-        $this->logger = Logger::getLogger(__CLASS__);
+
         $this->logger->debug('Panda framework started.');
         $this->setEnvironment($environment);
         $this->loadBundles();
         $this->loadServices();
         $this->loadInterceptors();
+        $this->notify();
     }
 
     /**
@@ -126,7 +126,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     {
         if (ConfigManager::configHasChanged()) {
             ConfigManager::saveAll();
-            $this->logger->info('Config saved".');
+            $this->logger->info('Config saved.');
         }
 
         $view->render();
@@ -138,8 +138,7 @@ class Application extends ObservableImpl implements \ArrayAccess
             }
         }
 
-        $execTime = microtime(true) - $this->startupTime;
-        $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$execTime.' s ('
+        $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$this->getRunningTime().' s ('
             .convert_bytes(memory_get_peak_usage(true)).').');
         $this->components['Symfony\Response']->prepare($this->components['Symfony\Request']);
         $this->components['Symfony\Response']->send();
@@ -181,6 +180,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     {
         if (is_string($environment) && !empty($environment)) {
             $this->environment = $environment;
+            $this->notify();
         } else {
             throw new \InvalidArgumentException('Invalid application environment name "'.$environment.'"');
         }

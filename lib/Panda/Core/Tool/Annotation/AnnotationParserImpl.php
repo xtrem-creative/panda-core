@@ -3,22 +3,17 @@
 namespace Panda\Core\Tool\Annotation;
 
 use Logger;
+use Panda\Core\Loggable;
 use ReflectionClass;
 
-class AnnotationParserImpl implements AnnotationParser
+class AnnotationParserImpl extends Loggable implements AnnotationParser
 {
-    private static $phpdoc_tags = array(
-        'package',
-        'author',
-        'param',
-        'return'
-    );
+    private $ignoredTags = array();
     private $knownTags = array();
-    private $logger = null;
 
     public function __construct()
     {
-        $this->logger = Logger::getLogger(__CLASS__);
+        $this->init(__CLASS__);
     }
 
     public function parse($class)
@@ -37,9 +32,13 @@ class AnnotationParserImpl implements AnnotationParser
 
             foreach ($tags as $tag) {
                 $posParenthesis = strpos($tag, '(');
+                $posSpace = strpos($tag, ' ');
                 if ($posParenthesis !== false) {
                     $tagName = substr($tag, 0, $posParenthesis);
                     $params = $this->extractParams(substr($tag, $posParenthesis + 1, -1));
+                } else if ($posSpace !== false) {
+                    $tagName = substr($tag, 0, $posSpace);
+                    $params = $this->extractParams(substr($tag, $posSpace + 1, -1));
                 } else {
                     $tagName = $tag;
                     $params = array();
@@ -50,7 +49,7 @@ class AnnotationParserImpl implements AnnotationParser
                 if (array_key_exists($tagName, $this->knownTags)) {
                     $reflection = new ReflectionClass($this->knownTags[$tagName]);
                     $tagsList[] = $reflection->newInstanceArgs($params);
-                } else if (!in_array($tagName, self::$phpdoc_tags)) {
+                } else if (!in_array($tagName, $this->ignoredTags)) {
                     $this->logger->info('Unkown annotation "'.$tagName.'" for class "'.$class.'"');
                 }
             }
@@ -96,5 +95,10 @@ class AnnotationParserImpl implements AnnotationParser
     public function addKnownAnnotation($annotationClassName, $alias = null)
     {
         $this->knownTags[$alias === null ? $annotationClassName : $alias] = $annotationClassName;
+    }
+
+    public function setIgnoredTags(array $ignoredTags)
+    {
+        $this->ignoredTags = $ignoredTags;
     }
 }
