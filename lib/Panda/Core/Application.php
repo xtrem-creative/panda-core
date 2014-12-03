@@ -30,9 +30,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     private $interceptors = array();
     private $services = array();
     private $components = array();
-    private $logger = null;
     private $route;
-    private $startupTime;
 
     public function __construct($environment = 'prod')
     {
@@ -42,13 +40,11 @@ class Application extends ObservableImpl implements \ArrayAccess
         if (!defined('VENDORS_DIR')) {
             define('VENDORS_DIR', ROOT . 'vendor/');
         }
-
-        $this->startupTime = microtime(true);
+        Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
+        $this->init(__CLASS__);
         ConfigManager::setEnvironment($environment);
         Debug::register($this);
         $this->loadDependencies();
-        Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
-        $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Panda framework started.');
         $this->setEnvironment($environment);
         $this->loadBundles();
