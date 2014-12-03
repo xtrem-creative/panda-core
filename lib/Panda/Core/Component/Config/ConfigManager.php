@@ -173,11 +173,7 @@ class ConfigManager
 
     private function saveConfig()
     {
-        if (is_file(RESOURCES_DIR . 'config/'.self::$environment.'/config.json')) {
-            file_put_contents(RESOURCES_DIR . 'config/'.self::$environment.'/config.json', json_encode($this->getAllConfig()));
-        } else {
-            file_put_contents(RESOURCES_DIR . 'config/config.json', json_encode($this->getAllConfig()));
-        }
+        file_put_contents(RESOURCES_DIR . 'config/config.json', json_readable_encode($this->getAllConfig()));
     }
 
     private function getAllConfig()

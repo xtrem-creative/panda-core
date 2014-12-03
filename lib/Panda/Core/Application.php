@@ -3,7 +3,6 @@
 namespace Panda\Core;
 
 use Logger;
-use Panda\Core\Component\Bundle\View\Exception\ResourceNotFoundException;
 use Panda\Core\Component\Bundle\View\ViewFacade;
 use Panda\Core\Component\Config\ConfigManager;
 use Panda\Core\Component\Router\Exception\NoMatchingRouteException;
@@ -31,7 +30,9 @@ class Application extends ObservableImpl implements \ArrayAccess
     private $interceptors = array();
     private $services = array();
     private $components = array();
+    private $logger = null;
     private $route;
+    private $startupTime;
 
     public function __construct($environment = 'prod')
     {
@@ -42,19 +43,17 @@ class Application extends ObservableImpl implements \ArrayAccess
             define('VENDORS_DIR', ROOT . 'vendor/');
         }
 
-        Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
-        $this->init(__CLASS__);
-
+        $this->startupTime = microtime(true);
         ConfigManager::setEnvironment($environment);
         Debug::register($this);
         $this->loadDependencies();
-
+        Logger::configure(RESOURCES_DIR . 'config/log4php.xml');
+        $this->logger = Logger::getLogger(__CLASS__);
         $this->logger->debug('Panda framework started.');
         $this->setEnvironment($environment);
         $this->loadBundles();
         $this->loadServices();
         $this->loadInterceptors();
-        $this->notify();
     }
 
     /**
@@ -86,11 +85,7 @@ class Application extends ObservableImpl implements \ArrayAccess
             }
         }
 
-        try {
-            $view = $this->getController($this->route)->exec();
-        } catch (ResourceNotFoundException $e) {
-            $this->exitFailure(404, $e->getMessage());
-        }
+        $view = $this->getController($this->route)->exec();
 
         //Notify interceptors
         foreach ($this->interceptors as $interceptor) {
@@ -126,7 +121,7 @@ class Application extends ObservableImpl implements \ArrayAccess
     {
         if (ConfigManager::configHasChanged()) {
             ConfigManager::saveAll();
-            $this->logger->info('Config saved.');
+            $this->logger->info('Config saved".');
         }
 
         $view->render();
@@ -138,7 +133,8 @@ class Application extends ObservableImpl implements \ArrayAccess
             }
         }
 
-        $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$this->getRunningTime().' s ('
+        $execTime = microtime(true) - $this->startupTime;
+        $this->logger->debug('Exit success with HTTP code "'.$view->getHttpCode().'" in '.$execTime.' s ('
             .convert_bytes(memory_get_peak_usage(true)).').');
         $this->components['Symfony\Response']->prepare($this->components['Symfony\Request']);
         $this->components['Symfony\Response']->send();
@@ -162,6 +158,14 @@ class Application extends ObservableImpl implements \ArrayAccess
         return new $controllerClass($this, $route->getNamespace(), $route->getBundleName(), $route->getActionName());
     }
 
+    public function getService($serviceName)
+    {
+        if (!array_key_exists($serviceName, $this->services)) {
+            throw new \RuntimeException('"'.$serviceName.'" service not found.');
+        }
+        return $this->services[$serviceName];
+    }
+
     /**
      * Get the application environment name
      * @return string The application environment name
@@ -180,7 +184,6 @@ class Application extends ObservableImpl implements \ArrayAccess
     {
         if (is_string($environment) && !empty($environment)) {
             $this->environment = $environment;
-            $this->notify();
         } else {
             throw new \InvalidArgumentException('Invalid application environment name "'.$environment.'"');
         }
