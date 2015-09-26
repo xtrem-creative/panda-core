@@ -185,9 +185,7 @@ class ViewFacade implements View
                  * Use Twig template engine
                  * @link http://twig.sensiolabs.org/
                  */
-                if (class_exists('Twig_Loader_Filesystem') && class_exists('Twig_Environment') && class_exists
-                    ('Twig_SimpleFilter')
-                ) {
+                if (class_exists('Twig_Loader_Filesystem') && class_exists('Twig_Environment')) {
                     $tplEngine = new TwigView($this, RESOURCES_DIR . 'template/', $bundleViewsDir,
                         RESOURCES_DIR . 'cache/view/');
                 } else {

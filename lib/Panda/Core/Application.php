@@ -23,7 +23,8 @@ class Application extends ObservableImpl implements \ArrayAccess
 {
     private $dependencies = array(
         'Tool/Function/String.php',
-        'Tool/Function/Math.php'
+        'Tool/Function/Math.php',
+        'Tool/Function/Hash.php'
     );
     private $loadedBundles = array();
     private $environment;
