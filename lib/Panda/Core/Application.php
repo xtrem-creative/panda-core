@@ -48,6 +48,8 @@ class Application extends ObservableImpl implements \ArrayAccess
         $this->loadDependencies();
         $this->logger->debug('Panda framework started.');
         $this->setEnvironment($environment);
+        $this->components['Symfony\Request'] = Request::createFromGlobals();
+        $this->components['Symfony\Response'] = Response::create();
         $this->loadBundles();
         $this->loadServices();
         $this->loadInterceptors();
@@ -60,8 +62,6 @@ class Application extends ObservableImpl implements \ArrayAccess
     {
         $router = new Router($this->loadedBundles);
         $this->components['Router\Router'] = $router;
-        $this->components['Symfony\Request'] = Request::createFromGlobals();
-        $this->components['Symfony\Response'] = Response::create();
 
         try {
             $this->route = $router->findMatchingRoute(str_replace(WEB_ROOT, '/',

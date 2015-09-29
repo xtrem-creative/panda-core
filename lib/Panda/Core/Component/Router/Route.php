@@ -39,7 +39,6 @@ class Route
                 if (!empty($this->vars)) {
                     unset($matches[0]);
                     $matches = array_values($matches);
-
                     $matchesCount = count($matches);
 
                     $vars = array();
@@ -61,7 +60,6 @@ class Route
                                     $this->vars[$i]['name'].'"');
                             }
                         }
-                        ++$i;
                     }
 
                     $this->vars = $vars;

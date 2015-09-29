@@ -48,6 +48,11 @@ class TwigView extends AbstractViewResolver
         $twig->addGlobal('webroot', WEB_ROOT);
         $twig->addGlobal('currentUrl', str_replace(WEB_ROOT, '/', $this->viewFacade->getRequest()->getRequestUri()));
 
+        $twig->addFilter('url_transform', new \Twig_Filter_Function('url_transform'));
+        $twig->addFilter('str_repeat', new \Twig_Filter_Function('str_repeat'));
+        $twig->addFilter('truncate', new \Twig_Filter_Function('truncate'));
+        $twig->addFilter('strip_tags', new \Twig_Filter_Function('strip_tags'));
+
         $result = $twig->render(basename($templateName), $vars);
 
         $this->logger->debug('Render "'.$templateName.'": done');

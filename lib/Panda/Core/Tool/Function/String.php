@@ -18,6 +18,17 @@ if (!function_exists('str_starts_with')) {
     }
 }
 
+if (!function_exists('truncate')) {
+    function truncate($str, $length)
+    {
+        $length = abs((int)$length);
+        if(strlen($str) > $length) {
+            $str = preg_replace("/^(.{1,$length})(\s.*|$)/s", '\\1...', $str);
+        }
+        return $str;
+    }
+}
+
 if (!function_exists('json_readable_encode')) {
     function json_readable_encode($var)
     {
