@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\Response;
 class Application extends ObservableImpl implements \ArrayAccess
 {
     private $dependencies = array(
+        'Tool/Function/Dir.php',
         'Tool/Function/String.php',
         'Tool/Function/Math.php',
         'Tool/Function/Hash.php'
