@@ -51,6 +51,7 @@ class Application extends ObservableImpl implements \ArrayAccess
         $this->components['Symfony\Request'] = Request::createFromGlobals();
         $this->components['Symfony\Response'] = Response::create();
         $this->loadBundles();
+        $this->components['Router\Router'] = new Router($this->loadedBundles);
         $this->loadServices();
         $this->loadInterceptors();
     }
@@ -60,11 +61,8 @@ class Application extends ObservableImpl implements \ArrayAccess
      */
     public function run()
     {
-        $router = new Router($this->loadedBundles);
-        $this->components['Router\Router'] = $router;
-
         try {
-            $this->route = $router->findMatchingRoute(str_replace(WEB_ROOT, '/',
+            $this->route = $this['Router\Router']->findMatchingRoute(str_replace(WEB_ROOT, '/',
                 $this['Symfony\Request']->getRequestUri()));
         } catch (NoMatchingRouteException $e) {
             //No matching route -> 404 Not Found

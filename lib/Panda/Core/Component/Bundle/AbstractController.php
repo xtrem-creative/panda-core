@@ -67,10 +67,11 @@ abstract class AbstractController extends ObservableImpl implements Controller
             if ($bundleName === null) {
                 $daoClass = $this->namespace . '\\dao\\' . $daoName . 'Dao';
             } else {
-                if (!is_file(APP_DIR . $bundleName . '/' . $daoName . 'Dao.class.php')) {
+                if (!is_file(APP_DIR . 'bundles/' . $bundleName . '/dao/' . $daoName . 'Dao.php')) {
                     throw new \InvalidArgumentException('Unknown Dao "'.$daoName.'"');
                 }
-                $daoClass = $this->namespace . '\\dao\\' . $daoName . 'Dao';
+                $namespace = substr($this->namespace, 0, strpos($this->namespace, '\\'));
+                $daoClass = $namespace . '\\' . $bundleName . '\\dao\\' . $daoName . 'Dao';
             }
             $this->daos[$daoName] = new $daoClass();
         }
